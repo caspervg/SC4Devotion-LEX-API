@@ -33,7 +33,7 @@ Activates a *new user account* on the LEX, based on a URL with a confirmation co
 No
 
 ### Parameters
-- activation_key: secret key that is used to activate the account
+- activation_key: String - secret key that is used to activate the account
 
 ### Response
 - 403 Forbidden: not a valid activation key or the user is already activate
