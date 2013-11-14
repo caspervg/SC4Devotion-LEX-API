@@ -25,7 +25,7 @@ None
    "author":"barbyw",
    "is_exclusive":true,
    "maxis_category":"250_MX_Comm.gif",
-   "description":"Updated 23rd August to correct an OG error on the CO$$$ Stage 13\/14 set. There is a separate update if you have already downloaded this set.In the zip there are 10 individual zips containing a total of 53 lots. These cover CO$$ and CO$$$ and each individual installer has a loose Readme. Each Readme has details of the stats and Dependencies for the lots in the installer.\n These will not grow without the CAM which will be released in about 10 to 14 days.",
+   "description":"Updated 23rd August to correct an OG error on the CO$$$ Stage 13\/14 set. There is a separate update if you have already downloaded this set.",
    "images":{
       "primary":"images\/beximg\/thumbs\/camCO$$.jpg"
    },
