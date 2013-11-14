@@ -41,9 +41,9 @@ No
 
 ## Profile / User information
 
-	GET api/<version>/user
-
 Returns a JSON Object containing all information for the authenticated user.
+
+	GET api/<version>/user
 
 ### Authentication
 Yes, Basic HTTP
