@@ -13,8 +13,8 @@ No
 None
 
 ### Response
-404 Not Found: no (active) lot with that id
-200 OK: lot/file information
+- 404 Not Found: no (active) lot with that id
+- 200 OK: lot/file information
 
 ```javascript
 {
@@ -73,7 +73,7 @@ No
 None
 
 ### Response
-200 OK: list of lots
+- 200 OK: list of lots
 
 ```javascript
 [
@@ -113,10 +113,10 @@ Yes, Basic HTTP
 None
 
 ### Response
-404 Not Found: no (active) lot with that id
-401 Unauthorized: authentication failed
-429 Too Many Requests: user has reached his/her daily download limit
-200 OK: requested lot as a ZIP-file
+- 404 Not Found: no (active) lot with that id
+- 401 Unauthorized: authentication failed
+- 429 Too Many Requests: user has reached his/her daily download limit
+- 200 OK: requested lot as a ZIP-file
 
 ## Add Lot to Download List
 
@@ -131,8 +131,8 @@ Yes, Basic HTTP
 None
 
 ### Response
-403 Forbidden: requested lot/file is already on the user's download list or it does not exist
-200 OK: file has been added to the user's download list
+- 403 Forbidden: requested lot/file is already on the user's download list or it does not exist
+- 200 OK: file has been added to the user's download list
 
 ## Get Lot/File Comments
 
@@ -147,8 +147,8 @@ No
 None
 
 ### Response
-404 Not Found: no (active) lot wit that id
-200 OK: list of comments
+- 404 Not Found: no (active) lot wit that id
+- 200 OK: list of comments
 
 ```javascript
 [
@@ -201,10 +201,10 @@ Yes, Basic HTTP
 - comment: String/Blob - comment for the file
 
 ### Response
-401 Unauthorized: authentication failed
-404 Not Found: no (active) file with that id
-400 Bad Request: rating was < 1 or > 3
-200 OK: what was added
+- 401 Unauthorized: authentication failed
+- 404 Not Found: no (active) file with that id
+- 400 Bad Request: rating was < 1 or > 3
+- 200 OK: what was added
 
 ```javascript
 [
@@ -226,8 +226,8 @@ No
 None
 
 ### Response
-404 Not Found: no (active) file with that id
-200 OK: requested file **does not support** the dependency tracker
+- 404 Not Found: no (active) file with that id
+- 200 OK: requested file **does not support** the dependency tracker
 
 ```javascript
 {
