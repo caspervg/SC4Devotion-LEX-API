@@ -1,0 +1,1 @@
+The SC4D LEX API code requires just one dependency, the [epiphany PHP micro-framework](https://github.com/jmathai/epiphany). Which has to be extracted into the /lib directory.
