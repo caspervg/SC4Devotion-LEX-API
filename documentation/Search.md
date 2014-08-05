@@ -28,6 +28,7 @@ lex_category | Integer | N/A | **catid** of the lot/file LEX category
 lex_type | Integer | N/A | **typeid** of the lot/file LEX type
 broad_type | String | <br>lotbat<br>dependency<br>map<br>mod<br>other | **broad type** of the lot<br>Lots & BATs<br>Dependencies<br>Maps<br>Mods<br>Files, Tools, etc.
 group | Integer | N/A | **groupid** of the lot/file LEX group
+query | String | N/A | (part of) the name of the file to search for
 exclude_notcert | Boolean | <br>true<br>false | **exclude** files that are **not LEX Certified** from the results<br>yes<br>no
 exclude_locked | Boolean | <br>true<br>false | **exclude** files that are **locked** from the results<br>yes<br>no
 

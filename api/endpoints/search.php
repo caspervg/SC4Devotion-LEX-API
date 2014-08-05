@@ -153,11 +153,19 @@ class Search {
             $num++;
         }
 
+        if (isset($_REQUEST['query']) && strlen($_REQUEST['query']) > 0) {
+            if ($num > 0) {
+                $select = $select . " AND UPPER(LOTNAME) LIKE :namequery";
+            } else {
+                $select = "UPPER(LOTNAME) LIKE :namequery";
+            }
+            $params[':namequery'] = strtoupper("%" . trim($_REQUEST['query']) . "%");
+            $num++;
+        }
+
         if ($num < 1) {
             // No criteria
-            header('Content-Type: application/json');
-            header('HTTP/1.1 400 Bad Request', true, 400);
-            die('no criteria');
+            HTTP::error_400();
         }
 
         if (isset($_REQUEST['exclude_locked']) && $_REQUEST['exclude_locked'] != '0') {
