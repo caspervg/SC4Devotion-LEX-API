@@ -17,6 +17,7 @@ amount | Integer | N/A | show this many results
 | order_by | String | <br>download<br>popular<br>update<br>recent | **order by:**<br>number of downloads<br>number of downloads<br>update date<br>release date
 order | String | <br>asc<br>desc | **sort:**<br>ascending<br>descending
 concise | Boolean | <br>true<br>false | **return:**<br>only lotname/lotid<br>everything
+dependencies | String | <br>full<br>concise | **return:**<br>full dependency list<br>concise dependency list
 
 
 ### Filtering parameters

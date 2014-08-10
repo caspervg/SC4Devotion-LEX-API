@@ -48,7 +48,7 @@ class User {
                     if (! $ban) {
                         return true;
                     } else {
-                        HTPP::error_403();
+                        HTTP::error_403();
                     }
                 } else {
                     HTTP::error_409();
@@ -89,7 +89,7 @@ class User {
                 "is_uploader" => self::toBool($user['UPLOADER']), "is_author" => self::toBool($user['AUTHOR']),
                 "is_admin" => self::toBool($user['ISADMIN']));
 
-            HTTP::json_200(array("result" => $arr, "status" => 'ok'));
+            HTTP::json_200($arr);
 
         } else {
             HTTP::error_403();

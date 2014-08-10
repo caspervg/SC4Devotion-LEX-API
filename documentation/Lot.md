@@ -27,7 +27,7 @@ None
    "maxis_category":"250_MX_Comm.gif",
    "description":"Updated 23rd August to correct an OG error on the CO$$$ Stage 13\/14 set. There is a separate update if you have already downloaded this set.",
    "images":{
-      "primary":"images\/beximg\/thumbs\/camCO$$.jpg"
+      "primary":"http:\/\/sc4devotion.com\/csxlex\/images\/beximg\/thumbs\/camCO$$.jpg"
    },
    "link":"lex_filedesc.php?lotGET=950",
    "is_certified":true,

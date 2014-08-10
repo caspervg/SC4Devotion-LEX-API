@@ -34,8 +34,15 @@ class Lot {
             $maxiscat = (strlen(trim($lot['MAXISCAT'])) == 0) ? '250_MX_00.jpg' : $lot['MAXISCAT'];
 
             $desc = strip_tags(trim(utf8_encode($lot['LOTDESC'])));
-            $img = array("primary" => "images/beximg/thumbs/" . trim($lot['LOTIMGDAY']));
-            $link = 'lex_filedesc.php?lotGET=' . $id;
+            $img = array("primary" => Constants::$IMG_LINK . trim($lot['LOTIMGDAY']));
+            if ($lot['LOTIMGNIGT'] && strlen($lot['LOTIMGNIGT']) > 0) {
+                $img["secondary"] = Constants::$IMG_LINK . trim($lot['LOTIMGNIGT']);
+            }
+            if ($lot['BIGLOTIMG'] && strlen($lot['BIGLOTIMG']) > 0) {
+                $img["extra"] = Constants::$IMG_LINK . trim($lot['BIGLOTIMG']);
+            }
+
+            $link = Constants::$INDEX_LINK . 'lex_filedesc.php?lotGET=' . $id;
             $certified = ($lot['ACCLVL'] > 0) ? true : false;
             $active = ($lot['ADMLOCK'] == 'T' || $lot['USRLOCK'] == 'T' || $lot['ISACTIVE'] == 'F') ? false : true;
             $upload_date = $lot['DATEON'];
@@ -281,7 +288,37 @@ class Lot {
         }
     }
 
-    private function getDependencies($deps) {
+    public static function getConciseDependencies($deps) {
+        if (strtoupper($deps) === 'N/A') {
+            $ret = array("status" => "not-available", "count" => -1, "list" => null);
+        } else if (strtoupper($deps) === 'NONE' || $deps === '') {
+            $ret = array("status" => "ok", "count" => 0, "list" => array("internal" => array(), "external" => array()));
+        } else {
+            $deplist = explode("$", $deps);
+            $internal = array();
+            $external = array();
+            $count = 0;
+
+            foreach ($deplist as $key => $dep) {
+                $count++;
+                if (strpos($dep, "@") === false) {
+                    // LEX file, add to internal
+                    $internal[] = (int) $dep;
+                } else {
+                    // Off-sitefile, add to external
+                    $split = explode("@", $dep);
+                    $external[] = array("link" => $split[1], "name" => $split[0]);
+                }
+            }
+
+            $ret = array("status" => "ok", "count" => $count,
+                         "list" => array("internal" => $internal, "external" => $external));
+        }
+
+        return $ret;
+    }
+
+    public static function getDependencies($deps) {
         $ret = null;
 
         if (strtoupper($deps) === 'N/A') {

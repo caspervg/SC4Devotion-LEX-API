@@ -23,11 +23,18 @@ class Search {
                     $author = $author_query['USRNAME'];
 
                     $exclusive = ($lot['LEXEXCL'] == 'T') ? true : false;
-                    $maxiscat = (strlen(trim($lot['MAXISCAT'])) == 0) ? '250_MX_00.jpg' : $lot['MAXISCAT'];
+                    $maxiscat = Constants::$CAT_LINK . ((strlen(trim($lot['MAXISCAT'])) == 0) ? '250_MX_00.jpg' : $lot['MAXISCAT']);
 
                     $desc = strip_tags(trim(utf8_encode($lot['LOTDESC'])));
-                    $img = array("primary" => "images/beximg/thumbs/" . trim($lot['LOTIMGDAY']));
-                    $link = 'lex_filedesc.php?lotGET=' . $id;
+                    $img = array("primary" => Constants::$IMG_LINK . trim($lot['LOTIMGDAY']));
+                    if ($lot['LOTIMGNIGT'] && strlen($lot['LOTIMGNIGT']) > 0) {
+                        $img["secondary"] = Constants::$IMG_LINK . trim($lot['LOTIMGNIGT']);
+                    }
+                    if ($lot['BIGLOTIMG'] && strlen($lot['BIGLOTIMG']) > 0) {
+                        $img["extra"] = Constants::$IMG_LINK . trim($lot['BIGLOTIMG']);
+                    }
+
+                    $link = Constants::$INDEX_LINK . 'lex_filedesc.php?lotGET=' . $id;
                     $certified = ($lot['ACCLVL'] > 0) ? true : false;
                     $active = ($lot['ADMLOCK'] == 'T' || $lot['USRLOCK'] == 'T') ? false : true;
                     $upload_date = $lot['DATEON'];
@@ -39,6 +46,11 @@ class Search {
                         "is_exclusive" => $exclusive, "maxis_category" => $maxiscat, "description" => $desc, "images" => $img, "link" => $link,
                         "is_certified" => $certified, "is_active" => $active, "upload_date" => $upload_date, "update_date" => $update_date,
                         "filesize" => $filesize);
+                    if ($_REQUEST['dependencies'] && $_REQUEST['dependencies'] === "full") {
+                        $arr['dependencies'] = Lot::getDependencies($lot['DEPS']);
+                    } else if ($_REQUEST['dependencies'] && $_REQUEST['dependencies'] === "concise") {
+                        $arr['dependencies'] = Lot::getConciseDependencies($lot['DEPS']);
+                    }
 
                     if ($userid) {
                         $history_query = getDatabase()->one("SELECT * FROM LEX_DOWNLOADTRACK WHERE LOTID = :lotid AND USRID = :usrid AND ISACTIVE='T'", array(":lotid" => $id, ":usrid" => $userid));
@@ -56,8 +68,8 @@ class Search {
             HTTP::json_200($results);
 
         } else {
-            // Bad criteria
-            HTTP::error_400();
+            // Bad criteria (no results)
+            HTTP::error_404();
         }
     }
 
@@ -155,9 +167,9 @@ class Search {
 
         if (isset($_REQUEST['query']) && strlen($_REQUEST['query']) > 0) {
             if ($num > 0) {
-                $select = $select . " AND UPPER(LOTNAME) LIKE :namequery";
+                $select = $select . " AND ( UPPER(LOTNAME) LIKE :namequery )";
             } else {
-                $select = "UPPER(LOTNAME) LIKE :namequery";
+                $select = "( UPPER(LOTNAME) LIKE :namequery )";
             }
             $params[':namequery'] = strtoupper("%" . trim($_REQUEST['query']) . "%");
             $num++;

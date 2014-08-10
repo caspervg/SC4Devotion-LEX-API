@@ -15,7 +15,7 @@ include_once 'endpoints/category.php';
 
 // Epiphany Setup
 Epi::setPath('base','lib');
-Epi::init('api','database','session', 'cache');
+Epi::init('api','database','session','cache','debug');
 EpiDatabase::employ(Constants::$DB_ARCH, Constants::$DB_NAME, Constants::$DB_HOST, Constants::$DB_USER, Constants::$DB_PASS);
 EpiSession::employ(array(EpiSession::PHP));
 
