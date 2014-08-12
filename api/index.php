@@ -6,12 +6,18 @@ include_once 'constants.php';
 // Epiphany include
 include_once 'lib/Epi.php';
 
+// Stathat include
+include_once 'lib/stathat.php';
+
 // Endpoint includes
 include_once 'endpoints/basic.php';
 include_once 'endpoints/lot.php';
 include_once 'endpoints/user.php';
 include_once 'endpoints/search.php';
 include_once 'endpoints/category.php';
+
+// Stathat call
+stathat_ez_count('your_stathat_account', 'LEX API' . Constants::getAPIVersion() . ' Calls', 1);
 
 // Epiphany Setup
 Epi::setPath('base','lib');
