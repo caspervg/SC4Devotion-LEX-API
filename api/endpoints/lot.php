@@ -292,27 +292,26 @@ class Lot {
         if (strtoupper($deps) === 'N/A') {
             $ret = array("status" => "not-available", "count" => -1, "list" => null);
         } else if (strtoupper($deps) === 'NONE' || $deps === '') {
-            $ret = array("status" => "ok", "count" => 0, "list" => array("internal" => array(), "external" => array()));
+            $ret = array("status" => "ok", "count" => 0, "list" => array());
         } else {
             $deplist = explode("$", $deps);
-            $internal = array();
-            $external = array();
+            $result = array();
             $count = 0;
 
             foreach ($deplist as $key => $dep) {
                 $count++;
                 if (strpos($dep, "@") === false) {
                     // LEX file, add to internal
-                    $internal[] = (int) $dep;
+                    $result[] = array("internal" => true, "id" => (int) $dep, "name" => "N/A");
                 } else {
                     // Off-sitefile, add to external
                     $split = explode("@", $dep);
-                    $external[] = array("link" => $split[1], "name" => $split[0]);
+                    $result[] = array("internal" => false, "link" => $split[1], "name" => $split[0]);
                 }
             }
 
             $ret = array("status" => "ok", "count" => $count,
-                         "list" => array("internal" => $internal, "external" => $external));
+                         "list" => $result);
         }
 
         return $ret;
