@@ -32,7 +32,7 @@ class Basic {
      */
     static public function getVersion() {
         $dir = explode('/', dirname(__FILE__));
-        $result = array('version' => $dir[count($dir) - 2], 'type' => 'private');
+        $result = array('version' => $dir[count($dir) - 2], 'type' => 'public');
 
         HTTP::json_200($result);
     }
