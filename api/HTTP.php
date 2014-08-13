@@ -82,10 +82,23 @@ class HTTP {
         die;
     }
 
+    public static function json_500($arr) {
+        header('HTTP/1.1 500 Internal Server Error', 500);
+        header('Content-Type: application/json; Charset=UTF-8');
+        die(json_encode($arr));
+    }
+
     // Not (Yet) Implemented
     public static function error_501() {
         header('HTTP/1.1 501 Not Implemented', 501);
         die;
+    }
+
+    // Service not available
+    public static function json_503($arr) {
+        header('HTTP/1.1 503 Service Not Available', 503);
+        header('Content-Type: application/json; Charset=UTF-8');
+        die(json_encode($arr));
     }
 
 

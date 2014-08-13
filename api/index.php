@@ -22,6 +22,7 @@ stathat_ez_count('your_stathat_account', 'LEX API' . Constants::getAPIVersion() 
 // Epiphany Setup
 Epi::setPath('base','lib');
 Epi::init('api','database','session','cache','debug');
+Epi::setSetting('exceptions', true);
 EpiDatabase::employ(Constants::$DB_ARCH, Constants::$DB_NAME, Constants::$DB_HOST, Constants::$DB_USER, Constants::$DB_PASS);
 EpiSession::employ(array(EpiSession::PHP));
 
@@ -59,4 +60,20 @@ getRoute()->get('/category/group', array('Category', 'getGroup'));
 getRoute()->get('/category/author', array('Category', 'getAuthor'));
 getRoute()->get('/category/all', array('Category', 'getAll'));
 // Fire 'em up!
-getRoute()->run();
+try {
+    getRoute()->run();
+} catch (Exception $ex) {
+    if (stripos($ex->getMessage(), "database") !== false) {
+        HTTP::json_503(array(
+            "status" => 503,
+            "error" => $ex->getMessage(),
+            "suggestion" => "Try again later"
+        ));
+    } else {
+        HTTP::json_500(array(
+            "status" => $ex->getCode(),
+            "error" => $ex->getMessage(),
+            "suggestion" => "Report to site administrator"
+        ));
+    }
+}
