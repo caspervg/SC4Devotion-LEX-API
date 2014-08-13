@@ -200,7 +200,7 @@ No
 None
 
 ### Response
-- 200 OK: list of all
+- 200 OK: overview of all categories
 
 ```javascript
 {
