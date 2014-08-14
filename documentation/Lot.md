@@ -28,8 +28,10 @@ None
    "description":"Updated 23rd August to correct an OG error on the CO$$$ Stage 13\/14 set. There is a separate update if you have already downloaded this set.",
    "images":{
       "primary":"http:\/\/sc4devotion.com\/csxlex\/images\/beximg\/thumbs\/camCO$$.jpg"
+      "secondary":"http:\/\/sc4devotion.com\/csxlex\/images\/beximg\/camCO$$_image2.jpg",
+      "extra":"http:\/\/sc4devotion.com\/csxlex\/images\/beximg\/camCO$$_imageextra.jpg"
    },
-   "link":"lex_filedesc.php?lotGET=950",
+   "link":"http:\/\/sc4devotion.com\/csxlex\/lex_filedesc.php?lotGET=950",
    "is_certified":true,
    "is_active":true,
    "upload_date":"20070706",
