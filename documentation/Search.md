@@ -65,9 +65,11 @@ exclude_locked | Boolean | <br>true<br>false | **exclude** files that are **lock
       "maxis_category":"250_MXC_WFK-Canals.gif",
       "description":"This is the second of a series of ploppable Stream lots to match in with the SG\/CAL Canals water texture.",
       "images":{
-         "primary":"images\/beximg\/thumbs\/Diggis Streams Grass Base Set BSC.jpg"
+         "primary":"http:\/\/sc4devotion.com\/csxlex\/images\/beximg\/thumbs\/Diggis Streams Grass Base Set BSC.jpg",
+         "secondary":"http:\/\/sc4devotion.com\/csxlex\/images\/beximg\/DiggisStreamsGrassBaseSet_Image2.jpg",
+         "extra":"http:\/\/sc4devotion.com\/csxlex\/images\/beximg\/DiggisStreamsGrassBaseSet_Extra.jpg"
       },
-      "link":"lex_filedesc.php?lotGET=2947",
+      "link":"http:\/\/sc4devotion.com\/csxlex\/lex_filedesc.php?lotGET=2947",
       "is_certified":true,
       "is_active":true,
       "upload_date":"20130302",
@@ -83,9 +85,9 @@ exclude_locked | Boolean | <br>true<br>false | **exclude** files that are **lock
       "maxis_category":"250_MXC_Modd.gif",
       "description":"This mod adds crocodiles to the game, as ploppable LOT (park menu) and an animal brush (god menu).\r\nIt will take some time before the crocodiles appear on the lot. Hold down the shift key when using the brush to create more crocodiles.\r\nBoth the lot and the brush can be used on land and on water.\r\n\r\nINSTALLATION\r\nUnzip this file in your plugins folder or (preferably) a subfolder.\r\n\r\nDEPENDENCIES\r\nNone",
       "images":{
-         "primary":"images\/beximg\/thumbs\/JENXFAUNA_Crocodiles_v1.jpg"
+         "primary":"http:\/\/sc4devotion.com\/csxlex\/images\/beximg\/thumbs\/JENXFAUNA_Crocodiles_v1.jpg"
       },
-      "link":"lex_filedesc.php?lotGET=2939",
+      "link":"http:\/\/sc4devotion.com\/csxlex\/lex_filedesc.php?lotGET=2939",
       "is_certified":true,
       "is_active":true,
       "upload_date":"20130223",
