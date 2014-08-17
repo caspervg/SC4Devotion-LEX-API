@@ -14,11 +14,12 @@ None
 | --------- | ---- | --- | --- |
 start | Integer | N/A | start at this result
 amount | Integer | N/A | show this many results
-| order_by | String | <br>download<br>popular<br>update<br>recent | **order by:**<br>number of downloads<br>number of downloads<br>update date<br>release date
+| order_by (*) | String | <br>download<br>popular<br>update<br>recent | **order by:**<br>number of downloads<br>number of downloads<br>update date<br>release date
 order | String | <br>asc<br>desc | **sort:**<br>ascending<br>descending
 concise | Boolean | <br>true<br>false | **return:**<br>only lotname/lotid<br>everything
 dependencies | String | <br>full<br>concise | **return:**<br>full dependency list<br>concise dependency list
 
+(\*) **Note:** Only the ```update``` parameter for the ```order_by``` filter will return any results if it is used by itself. The other parameters require at least one extra filter to be applied.
 
 ### Filtering parameters
 | Parameter | Type | Possibilities | Filter |
