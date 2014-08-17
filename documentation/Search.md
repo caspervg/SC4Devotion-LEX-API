@@ -10,16 +10,17 @@ None
 ## Parameters
 
 ### Main parameters
+
+These parameters put limitations on the result, but do not filter certain files. Using only these parameters (and no filtering parameters) will result in a HTTP 400 - Bad Request.
+
 | Parameter | Type | Possibilities | Sort/Get |
 | --------- | ---- | --- | --- |
 start | Integer | N/A | start at this result
 amount | Integer | N/A | show this many results
-| order_by (*) | String | <br>download<br>popular<br>update<br>recent | **order by:**<br>number of downloads<br>number of downloads<br>update date<br>release date
 order | String | <br>asc<br>desc | **sort:**<br>ascending<br>descending
 concise | Boolean | <br>true<br>false | **return:**<br>only lotname/lotid<br>everything
 dependencies | String | <br>full<br>concise | **return:**<br>full dependency list<br>concise dependency list
 
-(\*) **Note:** Only the ```update``` parameter for the ```order_by``` filter will return any results if it is used by itself. The other parameters require at least one extra filter to be applied.
 
 ### Filtering parameters
 | Parameter | Type | Possibilities | Filter |
@@ -30,6 +31,7 @@ lex_category | Integer | N/A | **catid** of the lot/file LEX category
 lex_type | Integer | N/A | **typeid** of the lot/file LEX type
 broad_type | String | <br>lotbat<br>dependency<br>map<br>mod<br>other | **broad type** of the lot<br>Lots & BATs<br>Dependencies<br>Maps<br>Mods<br>Files, Tools, etc.
 group | Integer | N/A | **groupid** of the lot/file LEX group
+| order_by | String | <br>download<br>popular<br>update<br>recent | **order by:**<br>number of downloads<br>number of downloads<br>update date<br>release date
 query | String | N/A | (part of) the name of the file to search for
 exclude_notcert | Boolean | <br>true<br>false | **exclude** files that are **not LEX Certified** from the results<br>yes<br>no
 exclude_locked | Boolean | <br>true<br>false | **exclude** files that are **locked** from the results<br>yes<br>no
