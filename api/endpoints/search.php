@@ -146,11 +146,19 @@ class Search {
             $num++;
         }
 
-        if (isset($_REQUEST['order_by']) && $_REQUEST['order_by'] === 'update') {
+        if (isset($_REQUEST['order_by'])) {
             if ($num > 0) {
-                $select = $select . " AND LASTUPDATE >= 0";
+                if ($_REQUEST['order_by'] === 'update') {
+                    $select = $select . " AND LASTUPDATE >= 0";
+                } else {
+                    $select = $select . " AND 1=1";
+                }
             } else {
-                $select = "LASTUPDATE >= 0";
+                if ($_REQUEST['order_by'] === 'update') {
+                    $select = "LASTUPDATE >= 0";
+                } else {
+                    $select = "1=1";
+                }
             }
             $num++;
         }
