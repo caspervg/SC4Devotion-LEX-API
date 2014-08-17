@@ -19,6 +19,10 @@ class Constants {
     public static $IMG_LINK = "http://mydomain.com/file_exchange/images/";              // Url to the images for your file exchange
     public static $CAT_LINK = "http://mydomain.com/file_exchange/category_images/";     // Url to the category images for your file exchange
 
+    // Log settings
+    public static $DO_LOG = false;
+    public static $LOG_FILE = "/home/my_username/logs/file_exchange/exchange.log";
+
     // Mail settigs
     public static $EMAIL_ORIG = "file_exchange@mydomain.com";							// E-mail address to send administrative e-mails from
 

@@ -19,6 +19,16 @@ include_once 'endpoints/category.php';
 // Stathat call
 stathat_ez_count('your_stathat_account', 'LEX API' . Constants::getAPIVersion() . ' Calls', 1);
 
+// Other logging
+if (Constants::$DO_LOG) {
+    $log_message = date('Y-m-d H:i:s',  $_SERVER['REQUEST_TIME']) . " - "
+        . $_SERVER['REMOTE_ADDR']. " - "
+        . $_SERVER['REQUEST_METHOD'] . ' ' . $_SERVER['REQUEST_URI'] . " - "
+        . ($_SERVER['PHP_AUTH_USER'] ? $_SERVER['PHP_AUTH_USER'] : "Not Authenticated") . " - ";
+    // No newline, we will add the response status code in HTTP.php
+    error_log($log_message, 3, Constants::$LOG_FILE);
+}
+
 // Epiphany Setup
 Epi::setPath('base','lib');
 Epi::init('api','database','session','cache','debug');
