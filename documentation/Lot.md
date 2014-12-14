@@ -136,11 +136,16 @@ None
 - 403 Forbidden: requested lot/file is already on the user's download list or it does not exist
 - 200 OK: file has been added to the user's download list
 
-## Get Lot/File Comments
+## Get Lot/File Comments (Deprecated)
 
 Returns a JSON Array containing a list of all comments for the request lot/file
 
 	GET /api/<version>/lot/:lotid:/comment
+
+### Deprecation
+This endpoint has been deprecated in ```v3``` and could be removed in future API versions.
+
+**Reason:** new Disqus-based comment-system. Use their API instead.
 
 ### Authentication
 No
