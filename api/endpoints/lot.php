@@ -184,13 +184,12 @@ class Lot {
     }
 
     static public function getComment($lotid) {
-        $lot = getDatabase()->one("SELECT * FROM LEX_LOTS WHERE LOTID = :lotid AND ISACTIVE = 'T'
-            AND ADMLOCK = 'F' AND USRLOCK = 'F'",
+        $lot = getDatabase()->one("SELECT * FROM LEX_LOTS WHERE LOTID = :lotid AND ISACTIVE = 'T'",
             array(":lotid" => $lotid));
 
         if ($lot) {
             $comments = getDatabase()->all("SELECT * FROM LEX_COMMENTS WHERE LOTID = :lotid
-                 ORDER BY COMMID DESC", array(":lotid" => $lotid));
+                AND ISACTIVE = 'T' ORDER BY COMMID DESC", array(":lotid" => $lotid));
             $results = array();
 
             foreach ($comments as $key => $comment) {
@@ -209,7 +208,6 @@ class Lot {
         } else {
             HTTP::error_404();
         }
-
     }
 
     static public function postComment($lotid) {
