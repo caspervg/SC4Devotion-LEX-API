@@ -215,7 +215,8 @@ class Lot {
             array(":lotid" => $lotid));
 
         if ($lot) {
-            $votes = getDatabase()->all("SELECT * FROM LEX_VOTES WHERE LOTID = :lotid AND ISACTIVE = 'T' AND RATETYPE = 'U'");
+            $votes = getDatabase()->all("SELECT * FROM LEX_VOTES WHERE LOTID = :lotid AND ISACTIVE = 'T' AND RATETYPE = 'U'",
+                array(":lotid" => $lotid));
             $ratings = array(
                 1 => 0,
                 2 => 0,
