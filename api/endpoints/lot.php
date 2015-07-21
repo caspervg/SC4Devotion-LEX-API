@@ -210,6 +210,28 @@ class Lot {
         }
     }
 
+    static public function getVote($lotid) {
+        $lot = getDatabase()->one("SELECT * FROM LEX_LOTS WHERE LOTID = :lotid AND ISACTIVE = 'T'",
+            array(":lotid" => $lotid));
+
+        if ($lot) {
+            $votes = getDatabase()->all("SELECT * FROM LEX_VOTES WHERE LOTID = :lotid AND ISACTIVE = 'T' AND RATETYPE = 'U'");
+            $ratings = array(
+                1 => 0,
+                2 => 0,
+                3 => 0
+            );
+
+            foreach ($votes as $key => $vote) {
+                $ratings[$vote['RATING']]++;
+            }
+
+            HTTP::json_200($ratings);
+        } else {
+            HTTP::error_404();
+        }
+    }
+
     static public function postComment($lotid) {
 
         $lot = getDatabase()->one("SELECT * FROM LEX_LOTS WHERE LOTID = :lotid AND ISACTIVE = 'T'",

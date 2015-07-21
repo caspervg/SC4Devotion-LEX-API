@@ -57,6 +57,7 @@ getRoute()->get('/lot/(\d+)/download-list', array('Lot', 'doDownloadList'));
 getRoute()->delete('/lot/(\d+)/download-list', array('Lot', 'deleteDownloadList'));
 getRoute()->get('/lot/(\d+)/comment', array('Lot', 'getComment'));
 getRoute()->post('/lot/(\d+)/comment', array('Lot', 'postComment'));
+getRoute()->get('/lot/(\d+)/vote', array('Lot', 'getVote'));
 getRoute()->get('/lot/(\d+)/dependency', array('Lot', 'getLotDependency'));
 getRoute()->get('/lot/(\d+)/dependency-string', array('Lot', 'getDependencyString'));
 getRoute()->put('/lot/(\d+)/dependency-string', array('Lot', 'updateDependencyString'));
