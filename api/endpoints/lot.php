@@ -190,7 +190,7 @@ class Lot {
 
         if ($lot) {
             $comments = getDatabase()->all("SELECT * FROM LEX_COMMENTS WHERE LOTID = :lotid
-                AND ISACTIVE = 'T' ORDER BY COMMID DESC", array(":lotid" => $lotid));
+                 ORDER BY COMMID DESC", array(":lotid" => $lotid));
             $results = array();
 
             foreach ($comments as $key => $comment) {
