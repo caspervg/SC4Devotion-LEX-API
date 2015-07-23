@@ -17,47 +17,71 @@ class Lot {
         HTTP::json_200($results);
     }
 
-    static public function getLot($lotid) {
+    public static function getLot($lot, $user=null) {
+        $id = $lot['LOTID'];
+        $name = trim($lot['LOTNAME']);
+        $version = trim($lot['VERSION']);
+        $numdl = $lot['LOTDOWNLOADS'];
 
-        $lot = getDatabase()->one("SELECT * FROM LEX_LOTS WHERE LOTID = :lotid", array(":lotid" => $lotid));
+        $author_query = getDatabase()->one('SELECT * FROM LEX_USERS WHERE USRID = :usrid', array(":usrid" => $lot['USRID']));
+        $author = $author_query['USRNAME'];
+
+        $exclusive = $lot['LEXEXCL'] === 'T';
+
+        $desc = strip_tags(trim(utf8_encode($lot['LOTDESC'])));
+
+        $img = array("primary" => Constants::$IMG_LINK . trim($lot['LOTIMGDAY']));
+        if ($lot['LOTIMGNIGT'] && strlen($lot['LOTIMGNIGT']) > 0) {
+            $img['secondary'] = Constants::$IMG_LINK . trim($lot['LOTIMGNIGT']);
+        }
+        if ($lot['BIGLOTIMG'] && strlen($lot['BIGLOTIMG']) > 0) {
+            $img['extra'] = Constants::$IMG_LINK . trim($lot['BIGLOTIMG']);
+        }
+
+        $link = Constants::$INDEX_LINK . 'lex_filedesc.php?lotGET=' . $id;
+        $certified = $lot['ACCLVL'] > 0;
+        $active = !($lot['ADMLOCK'] === 'T' || $lot['USRLOCK'] === 'T' || $lot['ISACTIVE'] === 'F');
+        $upload_date = Base::formatDate($lot['DATEON']);
+        $update_date = Base::formatDate($lot['LASTUPDATE']);
+        $file = Constants::$INT_FILE_DIR . $lot['LOTFILE'];
+        $filesize = self::getHumanFilesize(filesize($file));
+
+        $arr = array('id' => (int) $id, 'name' => $name, 'version' => $version, 'num_downloads' => (int) $numdl, 'author' => $author,
+            'is_exclusive' => $exclusive, 'description' => $desc, 'images' => $img, 'link' => $link,
+            'is_certified' => $certified, 'is_active' => $active, 'upload_date' => $upload_date, 'update_date' => $update_date,
+            'filesize' => $filesize);
+
+        if (array_key_exists('comments', $_GET)) {
+            $arr['comments'] = Lot::getComment($id);
+        }
+
+        if (array_key_exists('votes', $_GET)) {
+            $arr['votes'] = Lot::getVote($id);
+        }
+
+        if (array_key_exists('dependencies', $_GET)) {
+            $arr['dependencies'] = Lot::getDependencies($lot['DEPS']);
+        }
+
+        if (array_key_exists('categories', $_GET)) {
+            $arr['categories'] = Lot::getCategories($lot);
+        }
+
+        if (array_key_exists('user', $_GET) && $user) {
+            $history_query = getDatabase()->one('SELECT * FROM LEX_DOWNLOADTRACK WHERE LOTID = :lotid AND USRID = :usrid AND ISACTIVE=\'T\'',
+                array(':lotid' => $id, ':usrid' => $user));
+            $arr['last_downloaded'] = Base::formatDate($history_query);
+        }
+
+        return $arr;
+    }
+
+    public static function getLotHttp($lotid) {
+        $lot = getDatabase()->one('SELECT * FROM LEX_LOTS WHERE LOTID = :lotid', array(':lotid' => $lotid));
+        $user = Base::isAuth();
 
         if ($lot) {
-            $id = $lot['LOTID'];
-            $name = trim($lot['LOTNAME']);
-            $version = trim($lot['VERSION']);
-            $numdl = $lot['LOTDOWNLOADS'];
-
-            $author_query = getDatabase()->one("SELECT * FROM LEX_USERS WHERE USRID = :usrid", array(":usrid" => $lot['USRID']));
-            $author = $author_query['USRNAME'];
-
-            $exclusive = ($lot['LEXEXCL'] == 'T') ? true : false;
-            $maxiscat = (strlen(trim($lot['MAXISCAT'])) == 0) ? '250_MX_00.jpg' : $lot['MAXISCAT'];
-
-            $desc = strip_tags(trim(utf8_encode($lot['LOTDESC'])));
-            $img = array("primary" => Constants::$IMG_LINK . trim($lot['LOTIMGDAY']));
-            if ($lot['LOTIMGNIGT'] && strlen($lot['LOTIMGNIGT']) > 0) {
-                $img["secondary"] = Constants::$IMG_LINK . trim($lot['LOTIMGNIGT']);
-            }
-            if ($lot['BIGLOTIMG'] && strlen($lot['BIGLOTIMG']) > 0) {
-                $img["extra"] = Constants::$IMG_LINK . trim($lot['BIGLOTIMG']);
-            }
-
-            $link = Constants::$INDEX_LINK . 'lex_filedesc.php?lotGET=' . $id;
-            $certified = ($lot['ACCLVL'] > 0) ? true : false;
-            $active = ($lot['ADMLOCK'] == 'T' || $lot['USRLOCK'] == 'T' || $lot['ISACTIVE'] == 'F') ? false : true;
-            $upload_date = $lot['DATEON'];
-            $update_date = ($lot['LASTUPDATE'] != '') ? $lot['LASTUPDATE'] : null;
-            $dependencies = self::getDependencies($lot['DEPS']);
-            $file = Constants::$INT_FILE_DIR . $lot['LOTFILE'];
-            $filesize = self::getHumanFilesize(filesize($file));
-
-            $arr = array("id" => (int) $id, "name" => $name, "version" => $version, "num_downloads" => (int) $numdl, "author" => $author,
-                "is_exclusive" => $exclusive, "maxis_category" => $maxiscat, "description" => $desc, "images" => $img, "link" => $link,
-                "is_certified" => $certified, "is_active" => $active, "upload_date" => $upload_date, "update_date" => $update_date,
-                "filesize" => $filesize, "dependencies" => $dependencies);
-
-            HTTP::json_200($arr);
-
+            HTTP::json_200(Lot::getLot($lot, $user));
         } else {
             HTTP::error_404();
         }
@@ -187,54 +211,63 @@ class Lot {
         $lot = getDatabase()->one("SELECT * FROM LEX_LOTS WHERE LOTID = :lotid AND ISACTIVE = 'T'",
             array(":lotid" => $lotid));
 
-        if ($lot) {
-            $comments = getDatabase()->all("SELECT * FROM LEX_COMMENTS WHERE LOTID = :lotid
+        $comments = getDatabase()->all("SELECT * FROM LEX_COMMENTS WHERE LOTID = :lotid
                 AND ISACTIVE = 'T' ORDER BY COMMID DESC", array(":lotid" => $lotid));
-            $results = array();
+        $results = array();
 
-            foreach ($comments as $key => $comment) {
-                $poster = getDatabase()->one("SELECT * FROM LEX_USERS WHERE USRID = :usrid",
-                    array(":usrid" => $comment['USRID']));
+        foreach ($comments as $key => $comment) {
+            $poster = getDatabase()->one("SELECT * FROM LEX_USERS WHERE USRID = :usrid",
+                array(":usrid" => $comment['USRID']));
 
-                $by_author = ($poster['USRID'] === $lot['USRID']) ? true : false;
-                $by_admin = ($poster['ISADMIN'] === 'T') ? true : false;
+            $by_author = ($poster['USRID'] === $lot['USRID']);
+            $by_admin = ($poster['ISADMIN'] === 'T');
 
-                $results[] = array("id" => (int) $comment['COMMID'], "user" => $poster['USRNAME'], "text" => $comment['COMMENTTEXT'],
-                    "date" => $comment['DATEON'], "by_author" => $by_author, "by_admin" => $by_admin);
-            }
+            $results[] = array("id" => (int) $comment['COMMID'], "user" => $poster['USRNAME'], "text" => $comment['COMMENTTEXT'],
+                "date" => Base::formatDate($comment['DATEON']), "by_author" => $by_author, "by_admin" => $by_admin);
+        }
 
-            HTTP::json_200($results);
+        return $results;
+    }
 
+    static public function getCommentHttp($lotid) {
+        $lot = getDatabase()->one("SELECT * FROM LEX_LOTS WHERE LOTID = :lotid AND ISACTIVE = 'T'",
+            array(":lotid" => $lotid));
+
+        if ($lot) {
+            HTTP::json_200(Lot::getComment($lotid));
         } else {
             HTTP::error_404();
         }
     }
 
     static public function getVote($lotid) {
+        $votes = getDatabase()->all("SELECT * FROM LEX_VOTES WHERE LOTID = :lotid AND ISACTIVE = 'T' AND RATETYPE = 'U'",
+            array(":lotid" => $lotid));
+        $ratings = array(
+            1 => 0,
+            2 => 0,
+            3 => 0
+        );
+
+        foreach ($votes as $key => $vote) {
+            $ratings[$vote['RATING']]++;
+        }
+
+        return $ratings;
+    }
+
+    static public function getVoteHttp($lotid) {
         $lot = getDatabase()->one("SELECT * FROM LEX_LOTS WHERE LOTID = :lotid AND ISACTIVE = 'T'",
             array(":lotid" => $lotid));
 
         if ($lot) {
-            $votes = getDatabase()->all("SELECT * FROM LEX_VOTES WHERE LOTID = :lotid AND ISACTIVE = 'T' AND RATETYPE = 'U'",
-                array(":lotid" => $lotid));
-            $ratings = array(
-                1 => 0,
-                2 => 0,
-                3 => 0
-            );
-
-            foreach ($votes as $key => $vote) {
-                $ratings[$vote['RATING']]++;
-            }
-
-            HTTP::json_200($ratings);
+            HTTP::json_200(Lot::getVote($lotid));
         } else {
             HTTP::error_404();
         }
     }
 
     static public function postComment($lotid) {
-
         $lot = getDatabase()->one("SELECT * FROM LEX_LOTS WHERE LOTID = :lotid AND ISACTIVE = 'T'",
             array(":lotid" => $lotid));
 
@@ -273,7 +306,27 @@ class Lot {
         }
     }
 
-    static public function getLotDependency($lotid) {
+    public static function getCategories($lot) {
+        if ((trim($lot['MAXISCAT']) === '')) {
+            $maxis_arr = array('id' => -1, 'name' => 'Not assigned', 'image' => '250_MX_00.jpg');
+        } else {
+            $maxis_cat = getDatabase()->one('SELECT * FROM LEX_MAXISTYPES WHERE LOTIMG = :lotimg',
+                array(':lotimg' => $lot['MAXISCAT']));
+            $maxis_arr = array('id' => (int) $maxis_cat['MAXCNT'], 'name' => $maxis_cat['MAXISCAT'], 'image' => $maxis_cat['LOTIMG']);
+        }
+
+        $lex_cat = getDatabase()->one('SELECT * FROM LEX_CATAGORIES WHERE CATID = :catid',
+            array(':catid' => $lot['CATID']));
+        $lex_type = getDatabase()->one('SELECT * FROM LEX_TYPES WHERE TYPEID = :typeid',
+            array(':typeid' => $lot['TYPEID']));
+
+        $lex_arr = array('id' => (int) $lex_cat['CATID'], 'name' => $lex_cat['CATNAME']);
+        $typ_arr = array('id' => (int) $lex_type['TYPEID'], 'name' => $lex_type['TYPENAME'], 'description' => $lex_type['TYPEDESC']);
+
+        return array('maxis_category' => $maxis_arr, 'lex_category' => $lex_arr, 'lex_type' => $typ_arr);
+    }
+
+    public static function getLotDependency($lotid) {
         $lot = getDatabase()->one("SELECT DEPS FROM LEX_LOTS WHERE LOTID = :lotid AND ISACTIVE = 'T'",
             array(":lotid" => $lotid));
 
@@ -392,4 +445,5 @@ class Lot {
         $extra = ($factor > 0) ? "B" : "";
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . " " . @$sz[$factor] . $extra;
     }
+
 }

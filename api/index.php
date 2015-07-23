@@ -51,13 +51,13 @@ getRoute()->post('/user/register', array('User', 'registerUser'));
 getRoute()->get('/user/activate', array('User', 'activateUser'));
 // Lot functionality
 getRoute()->get('/lot/all', array('Lot', 'getAll'));
-getRoute()->get('/lot/(\d+)', array('Lot', 'getLot'));
+getRoute()->get('/lot/(\d+)', array('Lot', 'getLotHttp'));
 getRoute()->get('/lot/(\d+)/download', array('Lot', 'getDownload'));
 getRoute()->get('/lot/(\d+)/download-list', array('Lot', 'doDownloadList'));
 getRoute()->delete('/lot/(\d+)/download-list', array('Lot', 'deleteDownloadList'));
-getRoute()->get('/lot/(\d+)/comment', array('Lot', 'getComment'));
+getRoute()->get('/lot/(\d+)/comment', array('Lot', 'getCommentHttp'));
 getRoute()->post('/lot/(\d+)/comment', array('Lot', 'postComment'));
-getRoute()->get('/lot/(\d+)/vote', array('Lot', 'getVote'));
+getRoute()->get('/lot/(\d+)/vote', array('Lot', 'getVoteHttp'));
 getRoute()->get('/lot/(\d+)/dependency', array('Lot', 'getLotDependency'));
 getRoute()->get('/lot/(\d+)/dependency-string', array('Lot', 'getDependencyString'));
 getRoute()->put('/lot/(\d+)/dependency-string', array('Lot', 'updateDependencyString'));
@@ -74,17 +74,17 @@ getRoute()->get('/category/all', array('Category', 'getAll'));
 try {
     getRoute()->run();
 } catch (Exception $ex) {
-    if (stripos($ex->getMessage(), "database") !== false) {
+    if (stripos($ex->getMessage(), 'database') !== false) {
         HTTP::json_503(array(
-            "status" => 503,
-            "error" => $ex->getMessage(),
-            "suggestion" => "Try again later"
+            'status' => 503,
+            'error' => $ex->getMessage(),
+            'suggestion' => 'Try again later'
         ));
     } else {
         HTTP::json_500(array(
-            "status" => $ex->getCode(),
-            "error" => $ex->getMessage(),
-            "suggestion" => "Report to site administrator"
+            'status' => $ex->getCode(),
+            'error' => $ex->getMessage(),
+            'suggestion' => 'Report to site administrator'
         ));
     }
 }

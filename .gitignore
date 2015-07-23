@@ -1,2 +1,4 @@
 # Created by .gitignore support plugin (hsz.mobi)
 api/lib/stathat.php
+*.iml
+.idea

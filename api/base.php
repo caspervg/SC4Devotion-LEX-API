@@ -53,7 +53,12 @@ class Base {
         return ($usr['ISADMIN'] === 'T');
     }
 
-    static public function toDate($in) {
-       return;
+    static public function formatDate($in) {
+        if ($in === null || $in === '') {
+            return null;
+        }
+
+        $dateTime = new DateTime($in);
+        return $dateTime->format(DateTime::ISO8601);
     }
 }

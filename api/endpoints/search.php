@@ -11,62 +11,14 @@ class Search {
             $userid = Base::isAuth();
 
             foreach ($lot_query as $key => $lot) {
-                if ($_REQUEST['concise'] == 'true') {
-                    $arr = array("id" => (int) $lot['LOTID'], "name" => $lot['LOTNAME']);
+                if (array_key_exists('concise', $_GET)) {
+                    $results[] = array('id' => (int) $lot['LOTID'], 'name' => $lot['LOTNAME']);
                 } else {
-                    $id = $lot['LOTID'];
-                    $name = trim($lot['LOTNAME']);
-                    $version = trim($lot['VERSION']);
-                    $numdl = $lot['LOTDOWNLOADS'];
-
-                    $author_query = getDatabase()->one("SELECT * FROM LEX_USERS WHERE USRID = :usrid", array(":usrid" => $lot['USRID']));
-                    $author = $author_query['USRNAME'];
-
-                    $exclusive = ($lot['LEXEXCL'] == 'T') ? true : false;
-                    $maxiscat = Constants::$CAT_LINK . ((strlen(trim($lot['MAXISCAT'])) == 0) ? '250_MX_00.jpg' : $lot['MAXISCAT']);
-
-                    $desc = strip_tags(trim(utf8_encode($lot['LOTDESC'])));
-                    $img = array("primary" => Constants::$IMG_LINK . trim($lot['LOTIMGDAY']));
-                    if ($lot['LOTIMGNIGT'] && strlen($lot['LOTIMGNIGT']) > 0) {
-                        $img["secondary"] = Constants::$IMG_LINK . trim($lot['LOTIMGNIGT']);
-                    }
-                    if ($lot['BIGLOTIMG'] && strlen($lot['BIGLOTIMG']) > 0) {
-                        $img["extra"] = Constants::$IMG_LINK . trim($lot['BIGLOTIMG']);
-                    }
-
-                    $link = Constants::$INDEX_LINK . 'lex_filedesc.php?lotGET=' . $id;
-                    $certified = ($lot['ACCLVL'] > 0) ? true : false;
-                    $active = ($lot['ADMLOCK'] == 'T' || $lot['USRLOCK'] == 'T') ? false : true;
-                    $upload_date = $lot['DATEON'];
-                    $update_date = ($lot['LASTUPDATE'] != '') ? $lot['LASTUPDATE'] : null;
-                    $file = Constants::$INT_FILE_DIR . $lot['LOTFILE'];
-                    $filesize = filesize($file);
-
-                    $arr = array("id" => (int) $id, "name" => $name, "version" => $version, "num_downloads" => (int) $numdl, "author" => $author,
-                        "is_exclusive" => $exclusive, "maxis_category" => $maxiscat, "description" => $desc, "images" => $img, "link" => $link,
-                        "is_certified" => $certified, "is_active" => $active, "upload_date" => $upload_date, "update_date" => $update_date,
-                        "filesize" => $filesize);
-                    if ($_REQUEST['dependencies'] && $_REQUEST['dependencies'] === "full") {
-                        $arr['dependencies'] = Lot::getDependencies($lot['DEPS']);
-                    } else if ($_REQUEST['dependencies'] && $_REQUEST['dependencies'] === "concise") {
-                        $arr['dependencies'] = Lot::getConciseDependencies($lot['DEPS']);
-                    }
-
-                    if ($userid) {
-                        $history_query = getDatabase()->one("SELECT * FROM LEX_DOWNLOADTRACK WHERE LOTID = :lotid AND USRID = :usrid AND ISACTIVE='T'", array(":lotid" => $id, ":usrid" => $userid));
-                        if ($history_query) {
-                            $lastdl = $history_query['LASTDL'];
-                        } else {
-                            $lastdl = null;
-                        }
-                        $arr['last_downloaded'] = $lastdl;
-                    }
+                    $results[] = Lot::getLot($lot, $userid);
                 }
-                $results[] = $arr;
             }
 
             HTTP::json_200($results);
-
         } else {
             // Bad criteria (no results)
             HTTP::error_404();
