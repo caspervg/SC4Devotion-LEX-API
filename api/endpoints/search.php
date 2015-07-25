@@ -31,13 +31,13 @@ class Search {
         $params = array();
         $num = 0;
 
-        if (isset($_REQUEST['creator']) && $_REQUEST['creator'] != "Select") {
+        if (isset($_REQUEST['creator']) && $_REQUEST['creator'] !== "Select") {
             $num++;
             $select = "USRID = :usrid";
             $params[":usrid"] = trim($_REQUEST['creator']);
         }
 
-        if (isset($_REQUEST['broad_category']) && $_REQUEST['broad_category'] != "Select") {
+        if (isset($_REQUEST['broad_category']) && $_REQUEST['broad_category'] !== "Select") {
             if ($num > 0) {
                 $select = $select . " AND MAXISCAT = :maxiscat";
             } else {
@@ -47,7 +47,7 @@ class Search {
             $num++;
         }
 
-        if (isset($_REQUEST['lex_category']) && $_REQUEST['lex_category'] != "Select") {
+        if (isset($_REQUEST['lex_category']) && $_REQUEST['lex_category'] !== "Select") {
             if ($num > 0) {
                 $select = $select . " AND CATID = :lexcat";
             } else {
@@ -57,7 +57,7 @@ class Search {
             $num++;
         }
 
-        if (isset($_REQUEST['lex_type']) && $_REQUEST['lex_type'] != "Select") {
+        if (isset($_REQUEST['lex_type']) && $_REQUEST['lex_type'] !== "Select") {
             if ($num > 0) {
                 $select = $select . " AND TYPEID = :lextype";
             } else {
@@ -67,7 +67,7 @@ class Search {
             $num++;
         }
 
-        if (isset($_REQUEST['broad_type']) && $_REQUEST['broad_type'] != "Select") {
+        if (isset($_REQUEST['broad_type']) && $_REQUEST['broad_type'] !== "Select") {
 
             $broad = $_REQUEST['broad_type'];
             switch($broad) {
@@ -115,7 +115,7 @@ class Search {
             $num++;
         }
 
-        if (isset($_REQUEST['group']) && $_REQUEST['group'] != "Select") {
+        if (isset($_REQUEST['group']) && $_REQUEST['group'] !== "Select") {
             if ($num > 0) {
                 $select = $select . " AND LOTGROUP = :lotgroup";
             } else {
@@ -184,17 +184,17 @@ class Search {
             $select = $select . " ORDER BY LOTID";
         }
 
-        if (isset($_REQUEST['order']) && strtoupper($_REQUEST['order']) == 'ASC') {
+        if (isset($_REQUEST['order']) && strtoupper($_REQUEST['order']) === 'ASC') {
             $select = $select . " ASC";
         } else {
             $select = $select . " DESC";
         }
 
         if (isset($_REQUEST['start'])) {
-            $start = intval(trim($_REQUEST['start']));
+            $start = (int) (trim($_REQUEST['start']));
 
             if(isset($_REQUEST['amount'])) {
-                $amount = intval(trim($_REQUEST['amount']));
+                $amount = (int) (trim($_REQUEST['amount']));
 
                 $select = $select . " LIMIT " . $start . ", " . $amount;
             } else {
@@ -202,7 +202,7 @@ class Search {
             }
         } else {
             if(isset($_REQUEST['amount'])) {
-                $amount = intval(trim($_REQUEST['amount']));
+                $amount = (int) (trim($_REQUEST['amount']));
 
                 $select = $select . " LIMIT 0, " . $amount;
             } else {
