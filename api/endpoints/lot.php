@@ -222,10 +222,12 @@ class Lot {
             $by_author = ($poster['USRID'] === $lot['USRID']);
             $by_admin = ($poster['ISADMIN'] === 'T');
 
-            $results[] = array('id' => (int) $comment['COMMID'], 'user' => $poster['USRNAME'], 'text' => $comment['COMMENTTEXT'],
+            $results[] = array('id' => (int) $comment['COMMID'], 'user' => $poster['USRNAME'], 'text' => utf8_encode($comment['COMMENTTEXT']),
                 'date' => Base::formatDate($comment['DATEON']), 'by_author' => $by_author, 'by_admin' => $by_admin);
         }
 
+        //echo json_encode($results);
+        //die;
         return $results;
     }
 
