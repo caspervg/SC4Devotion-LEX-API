@@ -16,6 +16,8 @@ include_once 'endpoints/user.php';
 include_once 'endpoints/search.php';
 include_once 'endpoints/category.php';
 
+date_default_timezone_set('UTC');
+
 // Stathat call
 stathat_ez_count('your_stathat_account', 'LEX API' . Constants::getAPIVersion() . ' Calls', 1);
 
