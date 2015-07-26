@@ -338,7 +338,7 @@ class Lot {
         }
     }
 
-    static function getDependencyString($lotid) {
+    public static function getDependencyString($lotid) {
         $lot = getDatabase()->one("SELECT DEPS FROM LEX_LOTS WHERE LOTID = :lotid AND ISACTIVE = 'T'",
             array(":lotid" => $lotid));
 
@@ -347,7 +347,7 @@ class Lot {
         }
     }
 
-    static function updateDependencyString($lotid) {
+    public static function updateDependencyString($lotid) {
         $usrid = Base::getAuth();
 
         if (Base::isAdmin($usrid)) {
@@ -419,7 +419,7 @@ class Lot {
         $sz = 'BKMGTP';
         $factor = floor((strlen($bytes) - 1) / 3);
         $extra = ($factor > 0) ? "B" : "";
-        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . " " . @$sz[$factor] . $extra;
+        return sprintf("%.2f", $bytes / pow(1024, $factor)) . @$sz[$factor];
     }
 
 }
