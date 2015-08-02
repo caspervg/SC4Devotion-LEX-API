@@ -10,7 +10,12 @@ Returns a JSON Object containing all the information about one lot/file
 No
 
 ### Parameters
-None
+| Parameter | Type | Possibilities | Explanation |
+| --------- | ---- | --- | --- |
+user | Boolean | set/not set | extra information relevant to the user (last downloaded)
+dependencies | Boolean | set/not set | show dependency information
+comments | Boolean | set/not set | add list of comments to the result
+votes | Boolean | set/not set | add the vote overview to the result
 
 ### Response
 - 404 Not Found: no (active) lot with that id
@@ -18,47 +23,64 @@ None
 
 ```javascript
 {
-   "id":950,
-   "name":"CAM Commercial Offices BSC",
-   "version":"1.0",
-   "num_downloads":38532,
-   "author":"barbyw",
-   "is_exclusive":true,
-   "maxis_category":"250_MX_Comm.gif",
-   "description":"Updated 23rd August to correct an OG error on the CO$$$ Stage 13\/14 set. There is a separate update if you have already downloaded this set.",
-   "images":{
-      "primary":"http:\/\/sc4devotion.com\/csxlex\/images\/beximg\/thumbs\/camCO$$.jpg"
-      "secondary":"http:\/\/sc4devotion.com\/csxlex\/images\/beximg\/camCO$$_image2.jpg",
-      "extra":"http:\/\/sc4devotion.com\/csxlex\/images\/beximg\/camCO$$_imageextra.jpg"
-   },
-   "link":"http:\/\/sc4devotion.com\/csxlex\/lex_filedesc.php?lotGET=950",
-   "is_certified":true,
-   "is_active":true,
-   "upload_date":"20070706",
-   "update_date":"20070825",
-   "dependencies":{
-      "status":"ok",
-      "count":2,
-      "list":[
-         {
-            "internal":false,
-            "link":"http:\/\/www.simtropolis.com\/forum\/files\/file\/11421-porkie-props-vol1-european-street-accessories\/",
-            "name":"Porkie Props Vol 01"
-         },
-         {
-            "internal":true,
-            "id":1263,
-            "name":"BSC Mega Props - JES Vol05",
-            "status":{
-               "ok":true,
-               "deleted":false,
-               "superceded":false,
-               "superceded_by":-1,
-               "locked":false
-            }
-         }
-      ]
-   }
+  "id": 10,
+  "name": "Praiodan Central Subway Station BSC",
+  "version": "1.0",
+  "num_downloads": 5802,
+  "author": "praiodan",
+  "is_exclusive": false,
+  "description": "You've been looking for a central subway station? You've been looking for one that is representative and fits into your old town district? Now you found it! This neo-classical building was mostly inspired by the Berlin' subway station at Wittenbergplatz (Wittenberg Square) which is just opposite of Berlin's most famous department store, the KaDeWe. This is a remake of one of my older Lots. All lot details and a linked dependency list are in the Readme. UPDATE 8.February 2007: Updated the ZIP-included ReadMe.\r\n\r\n\t\r\n\r\n\r\n\tUpdate 16 November 2014: Updated dependency links in the Dependency Tracker\r\n",
+  "images": {
+    "primary": "http:\/\/mydomain.com\/file_exchange\/images\/centralsubway_s.jpg",
+    "secondary": "http:\/\/mydomain.com\/file_exchange\/images\/centralsubway_sn.jpg"
+  },
+  "link": "http:\/\/mydomain.com\/file_exchange\/lex_filedesc.php?lotGET=10",
+  "is_certified": true,
+  "is_active": true,
+  "upload_date": "2007-01-12T00:00:00+0000",
+  "update_date": "2007-02-08T00:00:00+0000",
+  "filesize": "0.00",
+  "comments": [
+    {
+      "id": 35371,
+      "user": "nightshadow666",
+      "text": "Sehr sch\u00f6ne Arbeit! Passt perfekt f\u00fcr mein Berlin Projekt!!!",
+      "date": "2014-06-20T00:00:00+0000",
+      "by_author": false,
+      "by_admin": false
+    },
+    {
+      "id": 27,
+      "user": "blackbeard",
+      "text": "Awesome thanx for sharing.",
+      "date": "2007-01-12T00:00:00+0000",
+      "by_author": false,
+      "by_admin": false
+    }
+  ],
+  "votes": {
+    "1": 5,
+    "2": 1,
+    "3": 0
+  },
+  "dependencies": {
+    "status": "ok",
+    "count": 1,
+    "list": [
+      {
+        "internal": true,
+        "id": 443,
+        "name": "BSC Essentials",
+        "status": {
+          "ok": true,
+          "deleted": false,
+          "superceded": false,
+          "superceded_by": -1,
+          "locked": false
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -136,16 +158,11 @@ None
 - 403 Forbidden: requested lot/file is already on the user's download list or it does not exist
 - 200 OK: file has been added to the user's download list
 
-## Get Lot/File Comments (Deprecated)
+## Get Lot/File Comments
 
 Returns a JSON Array containing a list of all comments for the request lot/file
 
 	GET /api/<version>/lot/:lotid:/comment
-
-### Deprecation
-This endpoint has been deprecated in ```v3``` and could be removed in future API versions.
-
-**Reason:** new Disqus-based comment-system. Use their API instead.
 
 ### Authentication
 No
@@ -154,43 +171,35 @@ No
 None
 
 ### Response
-- 404 Not Found: no (active) lot wit that id
+- 404 Not Found: no (active) lot with that id
 - 200 OK: list of comments
 
 ```javascript
 [
-   {
-      "id":23597,
-      "user":"test_admin1",
-      "text":"thank you  beautiful work and another reward challenge",
-      "date":"20110227",
-      "by_author":false,
-      "by_admin":true
-   },
-   {
-      "id":864,
-      "user":"test_user2",
-      "text":"Thanks everyone for the supportive comments.",
-      "date":"20070215",
-      "by_author":true,
-      "by_admin":false
-   },
-   {
-      "id":163,
-      "user":"ifyoureadthis_youareamazing",
-      "text":"Another beautiful BSC reward!",
-      "date":"20070117",
-      "by_author":false,
-      "by_admin":false
-   },
-   {
-      "id":65,
-      "user":"test_user4",
-      "text":"I like this one very much. ALso like the readme to be visible in the description area! ",
-      "date":"20130114",
-      "by_author":false,
-      "by_admin":false
-   }
+  {
+    "id": 35371,
+    "user": "nightshadow666",
+    "text": "Sehr sch\u00f6ne Arbeit! Passt perfekt f\u00fcr mein Berlin Projekt!!!",
+    "date": "2014-06-20T00:00:00+0000",
+    "by_author": false,
+    "by_admin": false
+  },
+  {
+    "id": 28054,
+    "user": "sejr99999",
+    "text": "thank you   looks great",
+    "date": "2011-12-19T00:00:00+0000",
+    "by_author": false,
+    "by_admin": false
+  },
+  {
+    "id": 26435,
+    "user": "RudeLittleDude",
+    "text": "Nice station but, the link to the dependency needs a fix.",
+    "date": "2011-09-22T00:00:00+0000",
+    "by_author": false,
+    "by_admin": false
+  }
 ]
 ```
 

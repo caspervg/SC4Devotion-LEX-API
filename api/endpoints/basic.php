@@ -18,7 +18,7 @@ class Basic {
                         '/user/activate' => '(GET) activates the registration for a LEX user' );
         $lot = array(   '/lot/all' => '(GET) retrieves a list of all lots',
                         '/lot/:lotid' => '(GET) retrieves information about the lot with the supplied ID' );
-        $sear = array(  '/search' => '(GET) retrieves search results - more information: http://sc4devotion.com/forums/index.php?topic=16074.0');
+        $sear = array(  '/search' => '(GET) retrieves search results');
         $inter = array( '/lot/:lotid/download' => '(POST) retrieves a download link for the lot with the supplied ID - also adds it to download history',
                         '/lot/:lotid/download-list' => '(POST) adds the lot with the supplied ID to the download-later list' );
 

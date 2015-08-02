@@ -69,7 +69,7 @@ None
       "\/lot\/:lotid":"(GET) retrieves information about the lot with the supplied ID"
    },
    "search":{
-      "\/search":"(GET) retrieves search results - more information: http:\/\/sc4devotion.com\/forums\/index.php?topic=16074.0"
+      "\/search":"(GET) retrieves search results"
    },
    "interaction":{
       "\/lot\/:lotid\/download":"(POST) retrieves a download link for the lot with the supplied ID - also adds it to download history",

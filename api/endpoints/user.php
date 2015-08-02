@@ -67,7 +67,7 @@ class User {
         $user = getDatabase()->one('SELECT * FROM LEX_USERS WHERE USRID = :usrid', array(':usrid' => $id));
 
         $arr = array('id' => (int)$user['USRID'], 'fullname' => $user['FULLNAME'], 'username' => $user['USRNAME'],
-            'registered' => $user['DATEON'], 'last_login' => $user['LASTLOGIN'], 'is_active' => self::toBool($user['ISACTIVE']),
+            'registered' => Base::formatDate($user['DATEON']), 'last_login' => Base::formatDate($user['LASTLOGIN']), 'is_active' => self::toBool($user['ISACTIVE']),
             'user_level' => (int)$user['USRLVL'], 'email' => $user['EMAILADDDR'], 'login_count' => (int)$user['LOGINCNT'],
             'is_donator' => self::toBool($user['DONATOR']), 'is_rater' => self::toBool($user['RATER']),
             'is_uploader' => self::toBool($user['UPLOADER']), 'is_author' => self::toBool($user['AUTHOR']),
@@ -83,7 +83,7 @@ class User {
             $user = getDatabase()->one('SELECT * FROM LEX_USERS WHERE USRID = :usrid', array(':usrid' => $usrid));
 
             $arr = array('id' => (int) $user['USRID'], 'fullname' => $user['FULLNAME'], 'username' => $user['USRNAME'],
-                'registered' => $user['DATEON'], 'last_login' => $user['LASTLOGIN'], 'is_active' => self::toBool($user['ISACTIVE']),
+                'registered' => Base::formatDate($user['DATEON']), 'last_login' => Base::formatDate($user['LASTLOGIN']), 'is_active' => self::toBool($user['ISACTIVE']),
                 'user_level' => (int) $user['USRLVL'], 'email' => $user['EMAILADDDR'], 'login_count' => (int)$user['LOGINCNT'],
                 'is_donator' => self::toBool($user['DONATOR']), 'is_rater' => self::toBool($user['RATER']),
                 'is_uploader' => self::toBool($user['UPLOADER']), 'is_author' => self::toBool($user['AUTHOR']),
@@ -115,11 +115,11 @@ class User {
 
             foreach ($users as $key => $user) {
                 if ($_GET['concise'] === 'true') {
-                    $arr = array('id' => (int) $user['USRID'], 'username' => $user['USRNAME']);
+                    $arr = array('id' => (int) $user['USRID'], 'username' => utf8_encode($user['USRNAME']));
                 } else {
-                    $arr = array('id' => (int)$user['USRID'], 'fullname' => $user['FULLNAME'], 'username' => $user['USRNAME'],
-                        'registered' => $user['DATEON'], 'last_login' => $user['LASTLOGIN'], 'is_active' => self::toBool($user['ISACTIVE']),
-                        'user_level' => (int)$user['USRLVL'], 'email' => $user['EMAILADDDR'], 'login_count' => (int)$user['LOGINCNT'],
+                    $arr = array('id' => (int)$user['USRID'], 'fullname' => utf8_encode($user['FULLNAME']), 'username' => utf8_encode($user['USRNAME']),
+                        'registered' => Base::formatDate($user['DATEON']), 'last_login' => Base::formatDate($user['LASTLOGIN']), 'is_active' => self::toBool($user['ISACTIVE']),
+                        'user_level' => (int)$user['USRLVL'], 'email' => utf8_encode($user['EMAILADDDR']), 'login_count' => (int)$user['LOGINCNT'],
                         'is_donator' => self::toBool($user['DONATOR']), 'is_rater' => self::toBool($user['RATER']),
                         'is_uploader' => self::toBool($user['UPLOADER']), 'is_author' => self::toBool($user['AUTHOR']),
                         'is_admin' => self::toBool($user['ISADMIN']));

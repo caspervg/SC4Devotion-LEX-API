@@ -11,7 +11,7 @@ class Lot {
         $results = array();
 
         foreach ($lots as $key => $lot) {
-            $results[] = array('id' => (int) $lot['LOTID'], 'name' => $lot['LOTNAME']);
+            $results[] = array('id' => (int) $lot['LOTID'], 'name' => utf8_encode($lot['LOTNAME']));
         }
 
         HTTP::json_200($results);
