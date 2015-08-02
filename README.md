@@ -19,3 +19,8 @@ A few support/wrapper libraries for this API have been built
 #### v3
 * Images and category images now use a full url, instead of a relative url
 * Added options to return a full or concise dependency list on the /search/ endpoint
+
+#### v4
+* Add easier options to access lot comments & vote totals
+* Improve consistency in the JSON results (especially /lot/:lotid:/ vs the search results)
+* Improved UTF-8 support on new versions of PHP
