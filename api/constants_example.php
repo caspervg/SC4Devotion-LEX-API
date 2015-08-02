@@ -1,7 +1,7 @@
 <?php
 
 // Rename this file to constants.php after setting the correct configuration options for your environment
-class Constants {
+class ConstantsExample {
 
     // Config settings
     public static $DB_ARCH = 'mysql';

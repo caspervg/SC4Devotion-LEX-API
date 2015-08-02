@@ -60,8 +60,8 @@ None
    "id":1,
    "fullname":"Test McTester",
    "username":"test_account",
-   "registered":"20070602",
-   "last_login":"20131113090110",
+   "registered":"2007-06-02T00:00:00+0000",
+   "last_login":"2015-08-02T16:08:34+0000"
    "is_active":true,
    "user_level":1,
    "email":"example@domain.com",
@@ -104,26 +104,15 @@ None
       }
    },
    {
-      "record":{
-         "id":13117158
+      "record": {
+         "id": 14776622
       },
-      "lot":{
-         "id":930,
-         "name":"WTC Prop Pack 1 The Plaza Base",
-         "update_date":null,
-         "version":"1.0"
-      }
-   },
-   {
-      "record":{
-         "id":13120289
-      },
-      "lot":{
-         "id":100,
-         "name":"CAL Old English Harbour set",
-         "update_date":null,
-         "version":"1.0"
-      }
+      "lot": {
+         "id": 3231,
+         "name": "VIP vnaoned railway station",
+         "update_date": "2015-07-31T00:00:00-0500",
+         "version": "1.0",
+         "author": "girafe"
    }
 ]
 ```
@@ -146,76 +135,51 @@ None
 
 ```javascript
 [
-   {
-      "record":{
-         "id":12850359,
-         "last_downloaded":"20130812",
-         "last_version":"1.0",
-         "download_count":1
-      },
-      "lot":{
-         "id":746,
-         "name":"BSC MEGA Props - SG Vol 01",
-         "update_date":null,
-         "version":"1.0"
-      }
-   },
-   {
-      "record":{
-         "id":13098029,
-         "last_downloaded":"20131104",
-         "last_version":"1.0",
-         "download_count":2
-      },
-      "lot":{
-         "id":2,
-         "name":"CSX Farm SF - Veronique",
-         "update_date":null,
-         "version":"1.0"
-      }
-   },
-   {
-      "record":{
-         "id":12850366,
-         "last_downloaded":"20130812",
-         "last_version":"1.0",
-         "download_count":1
-      },
-      "lot":{
-         "id":101,
-         "name":"BSC TexturePack Cycledogg V 01b",
-         "update_date":"20070130",
-         "version":"1.0"
-      }
-   },
-   {
-      "record":{
-         "id":12850367,
-         "last_downloaded":"20130812",
-         "last_version":"1.0",
-         "download_count":1
-      },
-      "lot":{
-         "id":90,
-         "name":"BSC Textures Vol 01",
-         "update_date":"20070405",
-         "version":"1.0"
-      }
-   },
-   {
-      "record":{
-         "id":13116436,
-         "last_downloaded":"20131111",
-         "last_version":"1.0",
-         "download_count":3
-      },
-      "lot":{
-         "id":960,
-         "name":"CAM Residentials BSC",
-         "update_date":"20070722",
-         "version":"1.0"
-      }
-   }
+  {
+    "record": {
+      "id": 13147804,
+      "last_downloaded": "2015-06-28T00:00:00-0500",
+      "last_version": "2.0",
+      "download_count": 8
+    },
+    "lot": {
+      "id": 3070,
+      "name": "LEX Downloader X",
+      "update_date": "2015-06-28T00:00:00-0500",
+      "version": "2.0.1",
+      "author": "caspervg"
+    }
+  },
+  {
+    "record": {
+      "id": 14234851,
+      "last_downloaded": "2014-12-21T00:00:00-0600",
+      "last_version": "1.2.0",
+      "download_count": 1
+    },
+    "lot": {
+      "id": 2876,
+      "name": "DAMN Manager1.3.1",
+      "update_date": "2015-07-22T00:00:00-0500",
+      "version": "1.3.1",
+      "author": "Yild"
+    }
+  },
+  {
+    "record": {
+      "id": 12847184,
+      "last_downloaded": "2015-07-30T00:00:00-0500",
+      "last_version": "33 PR",
+      "download_count": 5
+    },
+    "lot": {
+      "id": 851,
+      "name": "Network Addon Mod (Windows)",
+      "update_date": "2015-07-29T00:00:00-0500",
+      "version": "33 PR",
+      "author": "NAM Team"
+    }
+  }
 ]
 ```
 
@@ -241,8 +205,8 @@ None
    "id":1,
    "fullname":"Test McTester",
    "username":"test_account",
-   "registered":"20070602",
-   "last_login":"20131113090110",
+   "registered":"2007-06-02T00:00:00+0000",
+   "last_login":"2015-08-02T16:08:34+0000"
    "is_active":true,
    "user_level":1,
    "email":"example@domain.com",
