@@ -70,7 +70,7 @@ class Lot {
         if (array_key_exists('user', $_GET) && $user) {
             $history_query = getDatabase()->one('SELECT * FROM LEX_DOWNLOADTRACK WHERE LOTID = :lotid AND USRID = :usrid AND ISACTIVE=\'T\'',
                 array(':lotid' => $id, ':usrid' => $user));
-            $arr['last_downloaded'] = Base::formatDate($history_query);
+            $arr['last_downloaded'] = Base::formatDate($history_query['LASTDL']);
         }
 
         return $arr;
