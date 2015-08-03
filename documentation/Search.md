@@ -113,8 +113,8 @@ exclude_locked | Boolean | <br>true<br>false | **exclude** files that are **lock
           "status": {
             "ok": true,
             "deleted": false,
-            "superceded": false,
-            "superceded_by": -1,
+            "superseded": false,
+            "superseded_by": -1,
             "locked": false
           }
         },
@@ -125,8 +125,8 @@ exclude_locked | Boolean | <br>true<br>false | **exclude** files that are **lock
           "status": {
             "ok": true,
             "deleted": false,
-            "superceded": false,
-            "superceded_by": -1,
+            "superseded": false,
+            "superseded_by": -1,
             "locked": false
           }
         }
@@ -190,8 +190,8 @@ exclude_locked | Boolean | <br>true<br>false | **exclude** files that are **lock
           "status": {
             "ok": true,
             "deleted": false,
-            "superceded": false,
-            "superceded_by": -1,
+            "superseded": false,
+            "superseded_by": -1,
             "locked": false
           }
         }

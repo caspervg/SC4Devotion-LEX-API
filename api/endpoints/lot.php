@@ -413,7 +413,7 @@ class Lot {
         $locked = (strtoupper($dep['ADMLOCK']) !== 'F' || strtoupper($dep['USRLOCK']) !== 'F');
         $status = (!$deleted && !$superceded && !$locked);
 
-        return array('ok' => $status, 'deleted' => $deleted, 'superceded' => $superceded, 'superceded_by' => $superceded_by,
+        return array('ok' => $status, 'deleted' => $deleted, 'superseded' => $superceded, 'superseded_by' => $superceded_by,
             'locked' => $locked);
     }
 
