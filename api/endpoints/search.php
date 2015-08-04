@@ -175,6 +175,9 @@ class Search {
                 case 'recent':
                     $order = "LOTID";
                     break;
+                case 'random':
+                    $order = "RAND()";
+                    break;
                 default:
                     $order = "LOTID";
                     break;
@@ -186,7 +189,7 @@ class Search {
 
         if (isset($_REQUEST['order']) && strtoupper($_REQUEST['order']) === 'ASC') {
             $select = $select . " ASC";
-        } else {
+        } else if (strtoupper($_REQUEST['order_by']) !== 'RANDOM') {
             $select = $select . " DESC";
         }
 
