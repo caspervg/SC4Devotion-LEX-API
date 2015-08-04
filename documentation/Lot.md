@@ -74,8 +74,8 @@ votes | Boolean | set/not set | add the vote overview to the result
         "status": {
           "ok": true,
           "deleted": false,
-          "superceded": false,
-          "superceded_by": -1,
+          "superseded": false,
+          "superseded_by": -1,
           "locked": false
         }
       }
@@ -272,8 +272,8 @@ None
         "status":{
            "ok":true,
            "deleted":false,
-           "superceded":false,
-           "superceded_by":-1,
+           "superseded":false,
+           "superseded_by":-1,
            "locked":false
         }
      }

@@ -20,8 +20,8 @@ class Search {
 
             HTTP::json_200($results);
         } else {
-            // Bad criteria (no results)
-            HTTP::error_404();
+            // Return empty array if no results are found (v4 change)
+            HTTP::json_200(array());
         }
     }
 

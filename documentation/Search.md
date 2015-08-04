@@ -41,8 +41,12 @@ exclude_locked | Boolean | <br>true<br>false | **exclude** files that are **lock
 
 ## Response
 - 400 Bad Request: Bad criteria, no criteria
-- 404 Not Found: no results for your query
 - 200 OK: list of results
+
+### No results
+```
+[]
+```
 
 ### Concise
 ```javascript
@@ -113,8 +117,8 @@ exclude_locked | Boolean | <br>true<br>false | **exclude** files that are **lock
           "status": {
             "ok": true,
             "deleted": false,
-            "superceded": false,
-            "superceded_by": -1,
+            "superseded": false,
+            "superseded_by": -1,
             "locked": false
           }
         },
@@ -125,8 +129,8 @@ exclude_locked | Boolean | <br>true<br>false | **exclude** files that are **lock
           "status": {
             "ok": true,
             "deleted": false,
-            "superceded": false,
-            "superceded_by": -1,
+            "superseded": false,
+            "superseded_by": -1,
             "locked": false
           }
         }
@@ -190,8 +194,8 @@ exclude_locked | Boolean | <br>true<br>false | **exclude** files that are **lock
           "status": {
             "ok": true,
             "deleted": false,
-            "superceded": false,
-            "superceded_by": -1,
+            "superseded": false,
+            "superseded_by": -1,
             "locked": false
           }
         }

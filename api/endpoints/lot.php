@@ -70,7 +70,7 @@ class Lot {
         if (array_key_exists('user', $_GET) && $user) {
             $history_query = getDatabase()->one('SELECT * FROM LEX_DOWNLOADTRACK WHERE LOTID = :lotid AND USRID = :usrid AND ISACTIVE=\'T\'',
                 array(':lotid' => $id, ':usrid' => $user));
-            $arr['last_downloaded'] = Base::formatDate($history_query);
+            $arr['last_downloaded'] = Base::formatDate($history_query['LASTDL']);
         }
 
         return $arr;
@@ -413,7 +413,7 @@ class Lot {
         $locked = (strtoupper($dep['ADMLOCK']) !== 'F' || strtoupper($dep['USRLOCK']) !== 'F');
         $status = (!$deleted && !$superceded && !$locked);
 
-        return array('ok' => $status, 'deleted' => $deleted, 'superceded' => $superceded, 'superceded_by' => $superceded_by,
+        return array('ok' => $status, 'deleted' => $deleted, 'superseded' => $superceded, 'superseded_by' => $superceded_by,
             'locked' => $locked);
     }
 
@@ -421,7 +421,7 @@ class Lot {
         $sz = 'BKMGTP';
         $factor = floor((strlen($bytes) - 1) / 3);
         $extra = ($factor > 0) ? "B" : "";
-        return sprintf("%.2f", $bytes / pow(1024, $factor)) . @$sz[$factor];
+        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . " " . @$sz[$factor] . $extra;
     }
 
 }
