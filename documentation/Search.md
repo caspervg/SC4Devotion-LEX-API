@@ -41,8 +41,12 @@ exclude_locked | Boolean | <br>true<br>false | **exclude** files that are **lock
 
 ## Response
 - 400 Bad Request: Bad criteria, no criteria
-- 404 Not Found: no results for your query
 - 200 OK: list of results
+
+### No results
+```
+[]
+```
 
 ### Concise
 ```javascript
