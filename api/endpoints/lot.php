@@ -348,7 +348,7 @@ class Lot {
             array(":lotid" => $lotid));
 
         if ($lot) {
-            HTTP::json_200(array('dependency' => $lot['DEPS']));
+            HTTP::json_200(array('string' => base64_encode($lot['DEPS'])));
         }
     }
 
@@ -358,7 +358,7 @@ class Lot {
         if (Base::isAdmin($usrid)) {
             if (isset($_REQUEST['string'])) {
                 getDatabase()->execute('UPDATE LEX_LOTS SET DEPS = :dep WHERE LOTID = :lotid',
-                    array(':dep' => $_REQUEST['string'], ':lotid' => $lotid));
+                    array(':dep' => base64_decode($_REQUEST['string']), ':lotid' => $lotid));
             } else {
                 HTTP::error_400();
             }
