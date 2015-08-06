@@ -28,7 +28,10 @@ class Lot {
 
         $exclusive = $lot['LEXEXCL'] === 'T';
 
-        $desc = strip_tags(trim(utf8_encode($lot['LOTDESC'])));
+        $desc = trim(utf8_encode($lot['LOTDESC']));
+        if (!isset($_GET['nostrip'])) {
+            $desc = strip_tags($desc);
+        }
 
         $img = array("primary" => Constants::$IMG_LINK . trim($lot['LOTIMGDAY']));
         if ($lot['LOTIMGNIGT'] && strlen($lot['LOTIMGNIGT']) > 0) {
