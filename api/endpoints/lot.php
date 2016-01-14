@@ -70,6 +70,10 @@ class Lot {
             $arr['categories'] = self::getCategories($lot);
         }
 
+        if (array_key_exists('dependents', $_GET)) {
+            $arr['dependents'] = self::getDependents($lot['LOTID']);
+        }
+
         if (array_key_exists('user', $_GET) && $user) {
             $history_query = getDatabase()->one('SELECT * FROM LEX_DOWNLOADTRACK WHERE LOTID = :lotid AND USRID = :usrid AND ISACTIVE=\'T\'',
                 array(':lotid' => $id, ':usrid' => $user));
@@ -229,8 +233,6 @@ class Lot {
                 'date' => Base::formatDate($comment['DATEON']), 'by_author' => $by_author, 'by_admin' => $by_admin);
         }
 
-        //echo json_encode($results);
-        //die;
         return $results;
     }
 
@@ -367,8 +369,27 @@ class Lot {
         }
     }
 
+    public static function bulkDownload($lotid) {
+        $usrid = Base::getAuth();
+        $lot = getDatabase()->one("SELECT DEPS FROM LEX_LOTS WHERE LOTID = :lotid AND ISACTIVE = 'T'",
+            array(":lotid" => $lotid));
+
+        if ($lot) {
+            $dependencies = self::getDependencies($lot['DEPS']);
+            if (! $dependencies['status'] === 'ok') {
+                HTTP::error_409();
+            }
+
+
+        } else {
+            HTTP::error_404();
+        }
+
+    }
+
     public static function getDependencies($deps) {
         $ret = null;
+        $usrid = Base::getAuth(false);
 
         if (strtoupper($deps) === 'N/A') {
             $ret = array('status' => 'not-available', 'count' => -1, 'list' => null);
@@ -388,11 +409,21 @@ class Lot {
                 $count++;
                 if (strpos($dep, '@') === false) {
                     // LEX file, return "internal: true, id, name"
-                    $dep_lot = getDatabase()->one('SELECT LOTNAME, ISACTIVE, SUPER, ADMLOCK, USRLOCK FROM LEX_LOTS WHERE LOTID = :lotid',
+                    $dep_lot = getDatabase()->one('SELECT LOTNAME, ISACTIVE, SUPER, ADMLOCK, USRLOCK, DEPS FROM LEX_LOTS WHERE LOTID = :lotid',
                         array(':lotid' => $dep));
                     if ($dep_lot) {
                         $status = self::getDependencyStatus($dep_lot);
-                        $results[] = array('internal' => true, 'id' => (int) $dep, 'name' => $dep_lot['LOTNAME'], 'status' => $status);
+                        $result = array('internal' => true, 'id' => (int) $dep, 'name' => $dep_lot['LOTNAME'], 'status' => $status,
+                            'dependencies' => self::getDependencies($dep_lot['DEPS']));
+
+                        if (array_key_exists('user', $_GET) && $usrid > 0) {
+                            $dep_dltrack = getDatabase()->one("SELECT DT.LASTDL FROM LEX_DOWNLOADTRACK DT WHERE LOTID = :lotid
+                                                               AND ISACTIVE = 'T' AND USRID = :usrid",
+                                                               array(':lotid' => $dep, ':usrid' => $usrid));
+                            $result['last_downloaded'] = Base::formatDate($dep_dltrack['LASTDL']);
+                        }
+
+                        $results[] = $result;
                     } else {
                         $results[] = array('internal' => true, 'id' => (int) $dep, 'name' => null);
                     }
@@ -407,6 +438,19 @@ class Lot {
         }
 
         return $ret;
+    }
+
+    private function getDependents($lotid) {
+        $dependents = getDatabase()->all('SELECT * FROM LEX_LOTS WHERE (DEPS LIKE :like_full) OR (DEPS LIKE :like_start) OR (DEPS LIKE :like_middle) OR (DEPS LIKE :like_end)',
+            array(':like_full' => $lotid, ':like_start' => $lotid . "$%", ':like_middle' => "%$" . $lotid . "$%", ':like_end' => "%$" . $lotid)
+        );
+
+        $results = array();
+        foreach ($dependents as $key => $dependent) {
+            $results[] = array('id' => $dependent['LOTID'], 'name' => $dependent['LOTNAME']);
+        }
+
+        return array('count' => count($results), 'items' => $results);
     }
 
     private function getDependencyStatus($dep) {
