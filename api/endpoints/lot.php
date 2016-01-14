@@ -3,6 +3,7 @@
 include_once 'constants.php';
 include_once 'HTTP.php';
 include_once 'base.php';
+include_once 'lib/zipstream.php';
 
 class Lot {
     static public function getAll() {
@@ -94,6 +95,66 @@ class Lot {
         }
     }
 
+    private static function checkDownloadLimits($usr, $lot) {
+        $qcount = getDatabase()->one("SELECT COUNT(LOTID) AS DLCOUNT FROM LEX_DOWNLOADS
+            WHERE USRID = :usrid AND LOTID = :lotid AND SUBSTRING(DATEIN FROM 1 FOR 8) = :today",
+            array(':usrid' => $usr['USRID'], ':lotid' => $lot['LOTID'], ':today' => date("Ymd")));
+        $scount = getDatabase()->one("SELECT SUM(SIZE) AS DLSUM FROM LEX_DOWNLOADS
+            WHERE USRID = :usrid AND SUBSTRING(DATEIN FROM 1 FOR 8) = :today",
+            array(':usrid' => $usr['USRID'], ':today' => date("Ymd")));
+        $lgroup = getDatabase()->one("SELECT * FROM LEX_DLLIMITS WHERE DLLIMITID = :limid",
+            array(':limid' => $usr['DLLIMITGROUP']));
+
+        if (((int)$lgroup['LIMITBYTES']) < 0 && ((int)$lgroup['LIMITFILES']) < 0) {
+            // Unlimited
+            return true;
+        } else {
+            if (((int)$qcount['DLCOUNT']) > ((int)$lgroup['LIMITFILES'])) {
+                // File downloaded too much today
+                return false;
+            }
+            if (((int)$scount['DLSUM']) > ((int)$lgroup['LIMITBYTES'])) {
+                // Bytes downloaded too much today
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static function updateDownloadTracker($usr, $lot) {
+        $usrid = $usr['USRID'];
+        $lotid = $lot['LOTID'];
+
+        $in_file = Constants::$INT_FILE_DIR . $lot['LOTFILE'];
+        $version = $lot['VERSION'];
+        $lotdl = ((int) $lot['LOTDOWNLOADS']) + 1;
+
+        $dltrack = getDatabase()->one("SELECT * FROM LEX_DOWNLOADTRACK WHERE USRID = :usrid
+                AND LOTID = :lotid AND ISACTIVE = 'T'",
+            array(':usrid' => $usrid, ':lotid' => $lotid));
+
+        if ($dltrack) {
+            getDatabase()->execute("UPDATE LEX_DOWNLOADTRACK SET DLCOUNT = DLCOUNT+1, LASTDL = :now, VERSION = :version
+                    WHERE DLRECID = :dlrecid",
+                array(':now' => date('YmdHis'), ':version' => $version, ':dlrecid' => $dltrack['DLRECID']));
+        } else {
+            getDatabase()->execute("INSERT INTO LEX_DOWNLOADTRACK (USRID, LOTID, DLCOUNT, LASTDL, ISACTIVE, VERSION) VALUES
+                    (:usrid, :lotid, 1, :now, 'T', :version)",
+                array(':usrid' => $usrid, ':lotid' => $lotid, ':now' => date('YmdHis'), ':version' => $version));
+        }
+
+        $size = filesize($in_file);
+
+        getDatabase()->execute("INSERT INTO LEX_DOWNLOADS (USRID, LOTID, SIZE, DATEIN) VALUES
+                (:usrid, :lotid, :size, :now)",
+            array(':usrid' => $usrid, ':lotid' => $lotid, ':size' => $size, ':now' => date('YmdHis')));
+
+        getDatabase()->execute("UPDATE LEX_LOTS SET LOTDOWNLOADS = :count, LASTDOWNLOAD = :now
+                WHERE LOTID = :lotid",
+            array(':count' => $lotdl, ':now' => date('YmdHis'), ':lotid' => $lotid));
+    }
+
     static public function getDownload($lotid) {
         $usrid = Base::getAuth();
 
@@ -103,56 +164,15 @@ class Lot {
 
         if ($lot) {
             $in_file = Constants::$INT_FILE_DIR . $lot['LOTFILE'];
-            $ex_file = Constants::$EXT_FILE_DIR . $lot['LOTFILE'];
-            $version = $lot['VERSION'];
-            $lotdl = ((int) $lot['LOTDOWNLOADS']) + 1;
+            $in_file_size = filesize($in_file);
 
-            // DL-Limit Checking
-            $qcount = getDatabase()->one("SELECT COUNT(LOTID) AS DLCOUNT FROM LEX_DOWNLOADS
-                WHERE USRID = :usrid AND LOTID = :lotid AND SUBSTRING(DATEIN FROM 1 FOR 8) = :today",
-                array(':usrid' => $usrid, ':lotid' => $lotid, ':today' => date("Ymd")));
-            $scount = getDatabase()->one("SELECT SUM(SIZE) AS DLSUM FROM LEX_DOWNLOADS
-                WHERE USRID = :usrid AND SUBSTRING(DATEIN FROM 1 FOR 8) = :today",
-                array(':usrid' => $usrid, ':today' => date("Ymd")));
-            $lgroup = getDatabase()->one("SELECT * FROM LEX_DLLIMITS WHERE DLLIMITID = :limid",
-                array(':limid' => $usr['DLLIMITGROUP']));
+            $ex_file = $lot['LOTFILE'];
 
-            if (((int) $lgroup['LIMITBYTES']) < 0 && ((int) $lgroup['LIMITFILES']) < 0) {
-                // Unlimited, OK
-            } else {
-                if (((int) $qcount['DLCOUNT']) > ((int) $lgroup['LIMITFILES'])) {
-                    HTTP::error_429();
-                }
-                if (((int) $scount['DLSUM']) > ((int) $lgroup['LIMITBYTES'])) {
-                    HTTP::error_429();
-                }
+            if (! self::checkDownloadLimits($usr, $lot)) {
+                HTTP::error_429();
             }
 
-            $dltrack = getDatabase()->one("SELECT * FROM LEX_DOWNLOADTRACK WHERE USRID = :usrid
-                AND LOTID = :lotid AND ISACTIVE = 'T'",
-                array(':usrid' => $usrid, ':lotid' => $lotid));
-
-            if ($dltrack) {
-                getDatabase()->execute("UPDATE LEX_DOWNLOADTRACK SET DLCOUNT = DLCOUNT+1, LASTDL = :now, VERSION = :version
-                    WHERE DLRECID = :dlrecid",
-                    array(':now' => date('YmdHis'), ':version' => $version, ':dlrecid' => $dltrack['DLRECID']));
-            } else {
-                getDatabase()->execute("INSERT INTO LEX_DOWNLOADTRACK (USRID, LOTID, DLCOUNT, LASTDL, ISACTIVE, VERSION) VALUES
-                    (:usrid, :lotid, 1, :now, 'T', :version)",
-                    array(':usrid' => $usrid, ':lotid' => $lotid, ':now' => date('YmdHis'), ':version' => $version));
-            }
-
-            $size = filesize($in_file);
-
-            getDatabase()->execute("INSERT INTO LEX_DOWNLOADS (USRID, LOTID, SIZE, DATEIN) VALUES
-                (:usrid, :lotid, :size, :now)",
-                array(':usrid' => $usrid, ':lotid' => $lotid, ':size' => $size, ':now' => date('YmdHis')));
-
-            getDatabase()->execute("UPDATE LEX_LOTS SET LOTDOWNLOADS = :count, LASTDOWNLOAD = :now
-                WHERE LOTID = :lotid",
-                array(':count' => $lotdl, ':now' => date('YmdHis'), ':lotid' => $lotid));
-
-            $filename = $lot['LOTFILE'];
+            self::updateDownloadTracker($usr, $lot);
 
             header('Pragma: public');
             header('Expires: 0');
@@ -160,15 +180,14 @@ class Lot {
             header('Cache-Control: public');
             header('Content-Description: File Transfer');
             header('Content-type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="'.$filename.'"');
+            header('Content-Disposition: attachment; filename="' . $ex_file . '"');
             header('Content-Transfer-Encoding: binary');
-            header('Content-Length: '.$size);
+            header('Content-Length: ' . $in_file_size);
             ob_end_flush();
             @readfile($in_file);
         } else {
             HTTP::error_404();
         }
-
     }
 
     static public function doDownloadList($lotid)
@@ -371,20 +390,110 @@ class Lot {
 
     public static function bulkDownload($lotid) {
         $usrid = Base::getAuth();
-        $lot = getDatabase()->one("SELECT DEPS FROM LEX_LOTS WHERE LOTID = :lotid AND ISACTIVE = 'T'",
+        $lot = getDatabase()->one("SELECT LOTNAME, LOTID, DEPS FROM LEX_LOTS WHERE LOTID = :lotid AND ISACTIVE = 'T'",
             array(":lotid" => $lotid));
 
         if ($lot) {
-            $dependencies = self::getDependencies($lot['DEPS']);
-            if (! $dependencies['status'] === 'ok') {
-                HTTP::error_409();
+            $dep_hash = self::getDependenciesFlat($lot['DEPS']);
+            $dep_array = array_values($dep_hash);
+            $contains = array();
+            $warnings = array();
+            $readme = "This bulk dependency package was created by the LEX API v" . Constants::getAPIVersion() . ", created by CasperVg\r\n
+Downloaded for " . $lot['LOTNAME'] . " (" . $lot['LOTID'] . ")\r\n\r\n
+CONTAINS.json: Overview of all dependency files that were included (if any)\r\n
+WARNINGS.json: Overview of all files that could not be included, generally because they are locked or deleted (if any)";
+
+            $zip = new ZipStream($lot['LOTNAME'] . '_dependencies.zip');
+
+            $lots = array();
+            $user = getDatabase()->one("SELECT * FROM LEX_USERS WHERE USRID = :usrid", array(':usrid' => $usrid));
+
+            foreach ($dep_array as $key => $dep) {
+                $lots[$key] = getDatabase()->one("SELECT * FROM LEX_LOTS WHERE LOTID = :lotid", array(':lotid' => $dep['id']));
+
+                if (! self::checkDownloadLimits($user, $lots[$key])) {
+                    // User has exceeded the daily download limit for this lot. We won't count this current bulk dependency
+                    // download as a part of it just yet though.
+                    HTTP::error_429();
+                }
+
+                if (! $dep['status']['deleted'] && ! $dep['status']['locked']) {
+                    $contains[] = $dep;
+                    $path = Constants::$INT_FILE_DIR . $lots[$key]['LOTFILE'];
+                    $zip->add_file_from_path($lots[$key]['LOTFILE'], $path);
+                } else {
+                    $warnings[] = $dep;
+                }
             }
 
+            foreach($lot as $key => $lots) {
+                self::updateDownloadTracker($user, $lots[$key]);
+            }
 
+            $zip->add_file('README.txt', $readme);
+            if (count($contains) > 0) {
+                $zip->add_file('CONTAINS.json', json_encode($contains));
+            } else if (count($warnings) > 0) {
+                $zip->add_file('WARNINGS.json', json_encode($warnings));
+            }
+
+            $zip->finish();
         } else {
             HTTP::error_404();
         }
 
+    }
+
+    public static function getDependenciesFlat($deps) {
+        $ret = null;
+        $usrid = Base::getAuth(false);
+        $results = array();
+
+        if (strtoupper($deps) === 'N/A') {
+            return array();
+        } else if ($deps === '' || strtoupper($deps) === 'NONE') {
+            return array();
+        } else {
+            $deplist = explode("$", $deps);
+            $count = 0;
+
+            foreach ($deplist as $key => $dep) {
+                if (trim($dep) === '') {
+                    // Do not count or check empty dependencies (training dollar sign)
+                    continue;
+                }
+
+                $count++;
+                if (strpos($dep, '@') === false) {
+                    // LEX file, return "internal: true, id, name"
+                    $dep_lot = getDatabase()->one('SELECT LOTNAME, ISACTIVE, SUPER, ADMLOCK, USRLOCK, DEPS, LOTFILE FROM LEX_LOTS WHERE LOTID = :lotid',
+                        array(':lotid' => $dep));
+                    if ($dep_lot) {
+                        $status = self::getDependencyStatus($dep_lot);
+
+                        while($status['superseded'] && $status['superseded_by'] > -1) {
+                            $dep = $status['superseded_by'];
+                            $dep_lot = getDatabase()->one('SELECT LOTNAME, ISACTIVE, SUPER, ADMLOCK, USRLOCK, DEPS, LOTFILE FROM LEX_LOTS WHERE LOTID = :lotid',
+                                array(':lotid' => $status['superseded_by']));
+                            $status = self::getDependencyStatus($dep_lot);
+                        }
+
+                        $dep_dltrack = getDatabase()->one("SELECT DT.LASTDL FROM LEX_DOWNLOADTRACK DT WHERE LOTID = :lotid
+                                                               AND ISACTIVE = 'T' AND USRID = :usrid",
+                            array(':lotid' => $dep, ':usrid' => $usrid));
+
+
+                        if (!$dep_dltrack) {
+                            $results[(int) $dep] = array('id' => (int) $dep, 'name' => $dep_lot['LOTNAME'], 'status' => $status,
+                                'file' => $dep_lot['LOTFILE']);
+                        }
+                        $results = $results + self::getDependenciesFlat($dep_lot['DEPS']);
+                    }
+                }
+            }
+        }
+
+        return $results;
     }
 
     public static function getDependencies($deps) {
