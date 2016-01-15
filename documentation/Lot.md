@@ -280,3 +280,82 @@ None
   ]
 }
 ```
+
+## Lot/File Bulk Dependency Download
+
+Retrieves a ZIP file with all internal dependencies (including cascading) for the requested lot/file that
+the user has not downloaded before (or are no longer up to date for the user).
+
+The ZIP file may contain two extra files, CONTAINS.json and WARNINGS.json. CONTAINS.json has a JSON-formatted listing of all files
+that were included in the download, along with their reason for inclusion, while WARNINGS.json has a JSON-formatted listing of files
+that could not be included in the download, for example because they were locked or deleted.
+
+	GET /api/<version>/lot/:lotid:/bulk-dependency
+
+### Authentication
+Yes, Basic HTTP (LEX username, LEX password)
+
+### Parameters
+None
+
+### Response
+- 401 Unauthorized: authentication failed
+- 429 Too Many Requests: user has exceeded one of the daily download limits
+- 200 OK: ZIP file with dependencies
+
+#### CONTAINS.json content
+```javascript
+[
+  {
+    "id": 119,
+    "name": "BMD Mediterranean Style Farms",
+    "status": {
+      "ok": true,
+      "deleted": false,
+      "superseded": false,
+      "superseded_by": -1,
+      "locked": false
+    },
+    "file": "BMD Med style Farms and fields.zip",
+    "reason": {
+      "first_time": true,
+      "outdated": false,
+      "version_mismatch": false
+    }
+  },
+  {
+    "id": 345,
+    "name": "BSC MEGA Props MBEAR Vol01",
+    "status": {
+      "ok": true,
+      "deleted": false,
+      "superseded": false,
+      "superseded_by": -1,
+      "locked": false
+    },
+    "file": "Install_BSC_MEGA_Props_MBEAR_Vol01.zip",
+    "reason": {
+      "first_time": true,
+      "outdated": false,
+      "version_mismatch": false
+    }
+  },
+  {
+    "id": 403,
+    "name": "BSC MEGA Props - swi21 Vol01",
+    "status": {
+      "ok": true,
+      "deleted": false,
+      "superseded": false,
+      "superseded_by": -1,
+      "locked": false
+    },
+    "file": "Install_BSC_MEGA_Props_swi21_Vol01.zip",
+    "reason": {
+      "first_time": false,
+      "outdated": true,
+      "version_mismatch": false
+    }
+  }
+]
+```
