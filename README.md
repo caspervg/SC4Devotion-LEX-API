@@ -25,3 +25,4 @@ A few support/wrapper libraries for this API have been built
 * Improve consistency in the JSON results (especially /lot/:lotid:/ vs the search results)
 * Improved UTF-8 support on new versions of PHP
 * Search returns an empty array (```[]```) instead of a HTTP 404 Not Found error when no results are found
+* Added bulk dependency download functionality under /lot/:lotid:/bulk-dependency
