@@ -433,9 +433,7 @@ WARNINGS.json: Overview of all files that could not be included, generally becau
 
             $zip->add_file('README.txt', $readme);
 
-            if (count($contains) > 0) {
-                $zip->add_file('CONTAINS.json', json_encode($contains));
-            }
+            $zip->add_file('CONTAINS.json', json_encode($contains));
 
             if (count($warnings) > 0) {
                 $zip->add_file('WARNINGS.json', json_encode($warnings));
