@@ -171,7 +171,7 @@ class Lot {
                 HTTP::error_429();
             }
 
-            self::updateDownloadTracker($usr, $lot);
+            self::updateDownloadTracker($usrid, $lot);
 
             header('Pragma: public');
             header('Expires: 0');
