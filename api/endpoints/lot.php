@@ -123,36 +123,42 @@ class Lot {
     }
 
     private static function updateDownloadTracker($usr, $lot) {
-        $usrid = $usr['USRID'];
-        $lotid = $lot['LOTID'];
 
-        $in_file = Constants::$INT_FILE_DIR . $lot['LOTFILE'];
-        $version = $lot['VERSION'];
-        $lotdl = ((int) $lot['LOTDOWNLOADS']) + 1;
+        die($usr);
+        try {
+            $usrid = $usr['USRID'];
+            $lotid = $lot['LOTID'];
 
-        $dltrack = getDatabase()->one("SELECT * FROM LEX_DOWNLOADTRACK WHERE USRID = :usrid
+            $in_file = Constants::$INT_FILE_DIR . $lot['LOTFILE'];
+            $version = $lot['VERSION'];
+            $lotdl = ((int) $lot['LOTDOWNLOADS']) + 1;
+
+            $dltrack = getDatabase()->one("SELECT * FROM LEX_DOWNLOADTRACK WHERE USRID = :usrid
                 AND LOTID = :lotid AND ISACTIVE = 'T'",
-            array(':usrid' => $usrid, ':lotid' => $lotid));
+                array(':usrid' => $usrid, ':lotid' => $lotid));
 
-        if ($dltrack) {
-            getDatabase()->execute("UPDATE LEX_DOWNLOADTRACK SET DLCOUNT = DLCOUNT+1, LASTDL = :now, VERSION = :version
+            if ($dltrack) {
+                getDatabase()->execute("UPDATE LEX_DOWNLOADTRACK SET DLCOUNT = DLCOUNT+1, LASTDL = :now, VERSION = :version
                     WHERE DLRECID = :dlrecid",
-                array(':now' => date('YmdHis'), ':version' => $version, ':dlrecid' => $dltrack['DLRECID']));
-        } else {
-            getDatabase()->execute("INSERT INTO LEX_DOWNLOADTRACK (USRID, LOTID, DLCOUNT, LASTDL, ISACTIVE, VERSION) VALUES
+                    array(':now' => date('YmdHis'), ':version' => $version, ':dlrecid' => $dltrack['DLRECID']));
+            } else {
+                getDatabase()->execute("INSERT INTO LEX_DOWNLOADTRACK (USRID, LOTID, DLCOUNT, LASTDL, ISACTIVE, VERSION) VALUES
                     (:usrid, :lotid, 1, :now, 'T', :version)",
-                array(':usrid' => $usrid, ':lotid' => $lotid, ':now' => date('YmdHis'), ':version' => $version));
-        }
+                    array(':usrid' => $usrid, ':lotid' => $lotid, ':now' => date('YmdHis'), ':version' => $version));
+            }
 
-        $size = filesize($in_file);
+            $size = filesize($in_file);
 
-        getDatabase()->execute("INSERT INTO LEX_DOWNLOADS (USRID, LOTID, SIZE, DATEIN) VALUES
+            getDatabase()->execute("INSERT INTO LEX_DOWNLOADS (USRID, LOTID, SIZE, DATEIN) VALUES
                 (:usrid, :lotid, :size, :now)",
-            array(':usrid' => $usrid, ':lotid' => $lotid, ':size' => $size, ':now' => date('YmdHis')));
+                array(':usrid' => $usrid, ':lotid' => $lotid, ':size' => $size, ':now' => date('YmdHis')));
 
-        getDatabase()->execute("UPDATE LEX_LOTS SET LOTDOWNLOADS = :count, LASTDOWNLOAD = :now
+            getDatabase()->execute("UPDATE LEX_LOTS SET LOTDOWNLOADS = :count, LASTDOWNLOAD = :now
                 WHERE LOTID = :lotid",
-            array(':count' => $lotdl, ':now' => date('YmdHis'), ':lotid' => $lotid));
+                array(':count' => $lotdl, ':now' => date('YmdHis'), ':lotid' => $lotid));
+        } catch (Exception $ex) {
+            die($lot . $usr . $ex);
+        }
     }
 
     static public function getDownload($lotid) {
@@ -428,12 +434,16 @@ WARNINGS.json: Overview of all files that could not be included, generally becau
 
             foreach($lot as $key => $lots) {
                 self::updateDownloadTracker($user, $lots[$key]);
+                HTTP::error_400();
             }
 
             $zip->add_file('README.txt', $readme);
+
             if (count($contains) > 0) {
                 $zip->add_file('CONTAINS.json', json_encode($contains));
-            } else if (count($warnings) > 0) {
+            }
+
+            if (count($warnings) > 0) {
                 $zip->add_file('WARNINGS.json', json_encode($warnings));
             }
 
